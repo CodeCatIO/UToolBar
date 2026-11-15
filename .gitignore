@@ -1,0 +1,18 @@
+# 构建产物
+bin/
+obj/
+publish/
+publish_nc/
+Installer/Output/
+
+# IDE
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# 调试与临时文件
+*.pdb
+*.log
+*.tmp

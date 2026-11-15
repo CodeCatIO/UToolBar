@@ -1,0 +1,152 @@
+<Window x:Class="EdgeBar.Views.RecordToolbarWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ShowInTaskbar="False" Topmost="True" ShowActivated="False"
+        ResizeMode="NoResize" SizeToContent="WidthAndHeight"
+        FontFamily="Microsoft YaHei UI, Segoe UI" UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Ideal">
+
+    <Window.Resources>
+        <Style x:Key="PillButton" TargetType="Button">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Padding" Value="18,7" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="16"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.9" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.78" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GhostButton" TargetType="Button">
+            <Setter Property="Foreground" Value="#4B5563" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="6,5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#F1F3F6" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="FormatRadio" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#374151" />
+            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="8,0,0,0" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style x:Key="GlyphButton" TargetType="Button" BasedOn="{StaticResource GhostButton}">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="#4B5563" />
+            <Setter Property="Padding" Value="5,4" />
+        </Style>
+    </Window.Resources>
+
+    <!-- 外层留出阴影空间 -->
+    <Border Margin="14" Background="#FFFFFF" CornerRadius="20" BorderBrush="#E2E6EC" BorderThickness="1"
+            Padding="14,6">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="4" Direction="270" Opacity="0.18" Color="#FF2A3B4D" />
+        </Border.Effect>
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Text="选择格式" FontSize="12" Foreground="#6B7280" VerticalAlignment="Center" />
+
+            <RadioButton x:Name="FormatMp4" Content="MP4" GroupName="Format"
+                         Style="{StaticResource FormatRadio}" Click="OnFormatClick" />
+            <RadioButton x:Name="FormatGif" Content="GIF" GroupName="Format"
+                         Style="{StaticResource FormatRadio}" Click="OnFormatClick" />
+
+            <Border Width="1" Height="20" Background="#E5E7EB" Margin="12,0" />
+
+            <Button x:Name="QualityButton" Style="{StaticResource GhostButton}" Click="OnQualityClick">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="QualityText" Text="标清" FontSize="12" VerticalAlignment="Center" />
+                    <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="8"
+                               Foreground="#9CA3AF" Margin="5,1,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <Border Width="1" Height="20" Background="#E5E7EB" Margin="10,0" />
+
+            <Grid x:Name="SpeakerHost" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="SpeakerButton" Style="{StaticResource GlyphButton}" Click="OnSpeakerClick" ToolTip="系统声音">
+                        <TextBlock Text="&#xE767;" FontFamily="Segoe MDL2 Assets" FontSize="15" VerticalAlignment="Center" />
+                    </Button>
+                    <Button x:Name="SpeakerMenuButton" Style="{StaticResource GlyphButton}" Padding="2,4" Margin="0,0,2,0" Click="OnSpeakerClick">
+                        <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="8" VerticalAlignment="Center" />
+                    </Button>
+                </StackPanel>
+                <Line x:Name="SpeakerSlash" X1="6" Y1="6" X2="20" Y2="20" Stroke="#EF4444" StrokeThickness="1.5"
+                      Visibility="Collapsed" IsHitTestVisible="False" />
+            </Grid>
+
+            <Grid x:Name="MicHost" VerticalAlignment="Center" Margin="4,0,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="MicButton" Style="{StaticResource GlyphButton}" Click="OnMicClick" ToolTip="麦克风">
+                        <TextBlock Text="&#xE720;" FontFamily="Segoe MDL2 Assets" FontSize="15" VerticalAlignment="Center" />
+                    </Button>
+                    <Button x:Name="MicMenuButton" Style="{StaticResource GlyphButton}" Padding="2,4" Margin="0,0,2,0" Click="OnMicClick">
+                        <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="8" VerticalAlignment="Center" />
+                    </Button>
+                </StackPanel>
+                <Line x:Name="MicSlash" X1="6" Y1="6" X2="20" Y2="20" Stroke="#EF4444" StrokeThickness="1.5"
+                      Visibility="Collapsed" IsHitTestVisible="False" />
+            </Grid>
+
+            <Border Width="1" Height="20" Background="#E5E7EB" Margin="12,0" />
+
+            <Button x:Name="StartButton" Style="{StaticResource PillButton}" Content="开始录制"
+                    Background="#2F7CF6" Click="OnStartClick" />
+            <Button x:Name="ExitButton" Style="{StaticResource PillButton}" Content="退出录制"
+                    Background="#FFFFFF" Foreground="#374151" BorderBrush="#DCE0E6"
+                    Padding="15,6" Margin="8,0,0,0" Click="OnExitClick">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="16"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#F3F5F8" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+    </Border>
+</Window>

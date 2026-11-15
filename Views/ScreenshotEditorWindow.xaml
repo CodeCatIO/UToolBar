@@ -1,0 +1,509 @@
+<Window x:Class="EdgeBar.Views.ScreenshotEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="截图标注"
+        Width="1120" Height="820"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="True" Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Microsoft YaHei UI, Segoe UI"
+        PreviewKeyDown="OnPreviewKeyDown">
+
+    <Window.Resources>
+        <DrawingBrush x:Key="CheckerBrush" TileMode="Tile" Viewport="0,0,14,14" ViewportUnits="Absolute">
+            <DrawingBrush.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="#FFFFFFFF">
+                        <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,14,14" /></GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="#FFDEDEDE">
+                        <GeometryDrawing.Geometry>
+                            <GeometryGroup>
+                                <RectangleGeometry Rect="0,0,7,7" />
+                                <RectangleGeometry Rect="7,7,7,7" />
+                            </GeometryGroup>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
+
+        <Style x:Key="ToolButton" TargetType="Button">
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="Margin" Value="0,0,4,0" />
+            <Setter Property="Background" Value="{StaticResource CardBg}" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" CornerRadius="9" Background="{TemplateBinding Background}" BorderBrush="{StaticResource Stroke}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource CardHover}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource StrokeStrong}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentSoft}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ToolToggle" TargetType="ToggleButton">
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="Margin" Value="0,0,4,0" />
+            <Setter Property="Background" Value="{StaticResource CardBg}" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Bd" CornerRadius="9" Background="{TemplateBinding Background}" BorderBrush="{StaticResource Stroke}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource CardHover}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource StrokeStrong}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentSoft}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="RingSlider" TargetType="Slider">
+            <Setter Property="Height" Value="26" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" Opacity="0" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" Opacity="0" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Width="20" Height="20" Cursor="Hand">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse Fill="{StaticResource CardBg}" Stroke="{StaticResource Accent}" StrokeThickness="2" />
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModeChip" TargetType="ToggleButton">
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="11,0" />
+            <Setter Property="Margin" Value="0,0,5,0" />
+            <Setter Property="Background" Value="{StaticResource CardBg}" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+            <Setter Property="FontSize" Value="10.5" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Bd" CornerRadius="8" Background="{TemplateBinding Background}" BorderBrush="{StaticResource Stroke}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource CardHover}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentSoft}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="18" Background="#FFFDFBF7" BorderBrush="#FFEDE6DB" BorderThickness="1" Margin="10">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="30" ShadowDepth="6" Direction="270" Opacity="0.22" Color="#99372A1C" />
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="52" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="48" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="32" />
+            </Grid.RowDefinitions>
+
+            <!-- 标题 -->
+            <Grid Grid.Row="0" Margin="18,0,12,0" Background="Transparent" MouseLeftButtonDown="OnHeaderDrag">
+                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock Text="截图标注" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <TextBlock x:Name="SizeInfo" FontSize="9" Foreground="{StaticResource TextMuted}" Margin="10,2,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+                <Button HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource IconButton}" Click="OnCloseClick" ToolTip="关闭">
+                    <Path Data="{StaticResource IconClose}" Style="{StaticResource StrokeIcon}" Width="10" Height="10" />
+                </Button>
+            </Grid>
+
+            <!-- 工具栏 -->
+            <Grid Grid.Row="1" Margin="18,0,12,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ToggleButton x:Name="ToolSelect" Style="{StaticResource ToolToggle}" Click="OnToolClick" Tag="select" ToolTip="选择并移动箭头、直线、矩形、文字">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="M0,0 L0,15 L4.5,11 L7.5,17 L10,16 L7,10 L12,10 Z" Fill="{StaticResource TextPrimary}" Stretch="Uniform" Width="11" Height="14" VerticalAlignment="Center" />
+                            <TextBlock Text="选择" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="DropLine" Style="{StaticResource ToolToggle}" Click="OnLineDropClick" ToolTip="箭头 / 直线">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="LineIcon" Text="→" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock x:Name="LineLabel" Text="箭头" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Text="⌄" FontSize="10" Foreground="{StaticResource TextMuted}" Margin="4,0,0,2" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="ToolPen" Style="{StaticResource ToolToggle}" Click="OnToolClick" Tag="pen" ToolTip="画笔">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE70F;" FontSize="14" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock Text="画笔" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="DropRect" Style="{StaticResource ToolToggle}" Click="OnRectDropClick" ToolTip="矩形样式">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="RectIcon" Text="▭" FontSize="17" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock Text="矩形" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Text="⌄" FontSize="10" Foreground="{StaticResource TextMuted}" Margin="4,0,0,2" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="ToolText" Style="{StaticResource ToolToggle}" Click="OnToolClick" Tag="text" ToolTip="文字">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="T" FontSize="15" FontWeight="Bold" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock Text="文字" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="ToolMosaic" Style="{StaticResource ToolToggle}" Click="OnToolClick" Tag="mosaic" ToolTip="马赛克笔刷">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="▦" FontSize="15" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock Text="马赛克" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="DropEraser" Style="{StaticResource ToolToggle}" Click="OnEraserDropClick" ToolTip="橡皮：编辑橡皮 / 原图橡皮">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE75C;" FontSize="14" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock x:Name="EraserLabel" Text="编辑橡皮" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Text="⌄" FontSize="10" Foreground="{StaticResource TextMuted}" Margin="4,0,0,2" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <Border Width="1" Height="18" Background="{StaticResource Stroke}" Margin="4,0,8,0" />
+
+                    <Button x:Name="BtnUndo" Style="{StaticResource ToolButton}" Click="OnUndoClick" ToolTip="撤销 Ctrl+Z">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="↶" FontSize="15" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock Text="撤销" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="BtnRedo" Style="{StaticResource ToolButton}" Click="OnRedoClick" ToolTip="重做 Ctrl+Y">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="↷" FontSize="15" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock Text="重做" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="BtnClear" Style="{StaticResource ToolButton}" Click="OnClearClick" ToolTip="清空所有绘画">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE74D;" FontSize="13" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock Text="清空" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button x:Name="BtnCopy" Style="{StaticResource ToolButton}" Click="OnCopyClick" ToolTip="复制并关闭 Ctrl+C">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE8C8;" FontSize="13" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock Text="复制" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="BtnSave" Style="{StaticResource ToolButton}" Click="OnSaveClick" ToolTip="保存 Ctrl+S">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE74E;" FontSize="13" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" />
+                            <TextBlock Text="保存" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="BtnPin" Style="{StaticResource PrimaryButton}" Height="34" Padding="12,0" Click="OnPinClick" ToolTip="贴到桌面 Ctrl+T">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE718;" FontSize="13" Foreground="White" VerticalAlignment="Center" />
+                            <TextBlock Text="贴到桌面" FontSize="11" Foreground="White" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- 选项 -->
+            <Grid Grid.Row="2" Margin="18,0,12,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="大小" FontSize="9.5" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
+                    <StackPanel x:Name="SizePanel" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,6,0" />
+                    <TextBlock x:Name="SizeValue" Text="5" FontSize="9.5" Width="24" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" />
+
+                    <Button x:Name="ColorButton" Style="{StaticResource ToolButton}" Height="30" Padding="8,0" Margin="10,0,8,0" Click="OnColorButtonClick" ToolTip="颜色 / RGBA / 屏幕取色">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="ColorSwatch" Width="16" Height="16" CornerRadius="4" BorderBrush="#33000000" BorderThickness="1" Background="#FFE05A55" />
+                            <TextBlock x:Name="ColorHexText" Text="#E05A55" FontSize="9.5" Foreground="{StaticResource TextSecondary}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Text="⌄" FontSize="10" Foreground="{StaticResource TextMuted}" Margin="4,0,0,2" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <TextBlock Text="颜色对所有工具生效" FontSize="9" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                </StackPanel>
+            </Grid>
+
+            <!-- 画布 -->
+            <Border Grid.Row="3" Background="#FFF6F1E9" BorderBrush="{StaticResource Stroke}" BorderThickness="1" CornerRadius="12" Margin="18,2,18,0" ClipToBounds="True">
+                <ScrollViewer x:Name="Viewport" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                              Background="Transparent" Padding="10" PreviewMouseWheel="OnViewportWheel"
+                              PreviewMouseRightButtonDown="OnPanStart" PreviewMouseMove="OnPanMove"
+                              PreviewMouseRightButtonUp="OnPanEnd">
+                    <Grid x:Name="CanvasHost" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Border x:Name="ArtboardBorder" BorderBrush="#33000000" BorderThickness="1">
+                            <Grid x:Name="Artboard">
+                                <Grid.Background>
+                                    <DrawingBrush TileMode="Tile" Viewport="0,0,16,16" ViewportUnits="Absolute">
+                                        <DrawingBrush.Drawing>
+                                            <DrawingGroup>
+                                                <GeometryDrawing Brush="#FFFFFFFF">
+                                                    <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,16,16" /></GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                                <GeometryDrawing Brush="#FFE3E3E3">
+                                                    <GeometryDrawing.Geometry>
+                                                        <GeometryGroup>
+                                                            <RectangleGeometry Rect="0,0,8,8" />
+                                                            <RectangleGeometry Rect="8,8,8,8" />
+                                                        </GeometryGroup>
+                                                    </GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                            </DrawingGroup>
+                                        </DrawingBrush.Drawing>
+                                    </DrawingBrush>
+                                </Grid.Background>
+                                <Canvas x:Name="Surface" Background="Transparent" ClipToBounds="True"
+                                        MouseLeftButtonDown="OnSurfaceMouseDown"
+                                        MouseMove="OnSurfaceMouseMove"
+                                        MouseLeftButtonUp="OnSurfaceMouseUp"
+                                        MouseLeave="OnSurfaceMouseLeave" />
+                                <Canvas x:Name="CursorCanvas" IsHitTestVisible="False">
+                                    <Rectangle x:Name="SelectionRect" Stroke="#FF427BD0" StrokeThickness="1.2" StrokeDashArray="4,3" Visibility="Collapsed" />
+                                    <Ellipse x:Name="CursorHalo" Stroke="White" StrokeThickness="3" Visibility="Collapsed" />
+                                    <Ellipse x:Name="CursorRing" Stroke="#FF202020" StrokeThickness="1" Visibility="Collapsed" />
+                                </Canvas>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+
+            <Grid Grid.Row="4" Margin="20,0,18,0">
+                <TextBlock x:Name="HintText" Text="拖动鼠标画箭头" FontSize="8.5" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
+                <TextBlock HorizontalAlignment="Right" Text="Ctrl+滚轮缩放 · Ctrl+Z 撤销 · Ctrl+Y 重做 · Ctrl+C 复制并关闭 · Ctrl+T 贴桌面 · Ctrl+S 保存" FontSize="8.5" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- 直线 / 箭头下拉 -->
+            <Popup x:Name="LinePopup" PlacementTarget="{Binding ElementName=DropLine}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True">
+                <Border Background="{StaticResource CardBg}" BorderBrush="{StaticResource Stroke}" BorderThickness="1" CornerRadius="10" Padding="6" Margin="0,4,0,0">
+                    <Border.Effect><DropShadowEffect BlurRadius="16" ShadowDepth="3" Direction="270" Opacity="0.16" Color="Black" /></Border.Effect>
+                    <StackPanel Width="120">
+                        <Button Style="{StaticResource ToolButton}" Height="32" HorizontalContentAlignment="Left" Click="OnLineArrowClick">
+                            <StackPanel Orientation="Horizontal"><TextBlock Text="→" FontSize="15" Foreground="{StaticResource TextPrimary}" /><TextBlock Text="箭头" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="8,0,0,0" /></StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource ToolButton}" Height="32" HorizontalContentAlignment="Left" Click="OnLineStraightClick">
+                            <StackPanel Orientation="Horizontal"><TextBlock Text="—" FontSize="15" Foreground="{StaticResource TextPrimary}" /><TextBlock Text="直线" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="8,0,0,0" /></StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Popup>
+
+            <!-- 矩形样式下拉 -->
+            <Popup x:Name="RectPopup" PlacementTarget="{Binding ElementName=DropRect}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True">
+                <Border Background="{StaticResource CardBg}" BorderBrush="{StaticResource Stroke}" BorderThickness="1" CornerRadius="10" Padding="6" Margin="0,4,0,0">
+                    <Border.Effect><DropShadowEffect BlurRadius="16" ShadowDepth="3" Direction="270" Opacity="0.16" Color="Black" /></Border.Effect>
+                    <StackPanel Width="150">
+                        <Button Style="{StaticResource ToolButton}" Height="32" HorizontalContentAlignment="Left" Click="OnRectStyleClick" Tag="0">
+                            <StackPanel Orientation="Horizontal"><TextBlock Text="▭" FontSize="16" Foreground="{StaticResource TextPrimary}" /><TextBlock Text="空心矩形" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="8,0,0,0" /></StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource ToolButton}" Height="32" HorizontalContentAlignment="Left" Click="OnRectStyleClick" Tag="1">
+                            <StackPanel Orientation="Horizontal"><TextBlock Text="▬" FontSize="16" Foreground="{StaticResource TextPrimary}" /><TextBlock Text="实心矩形" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="8,0,0,0" /></StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Popup>
+
+            <!-- 橡皮下拉 -->
+            <Popup x:Name="EraserPopup" PlacementTarget="{Binding ElementName=DropEraser}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True">
+                <Border Background="{StaticResource CardBg}" BorderBrush="{StaticResource Stroke}" BorderThickness="1" CornerRadius="10" Padding="6" Margin="0,4,0,0">
+                    <Border.Effect><DropShadowEffect BlurRadius="16" ShadowDepth="3" Direction="270" Opacity="0.16" Color="Black" /></Border.Effect>
+                    <StackPanel Width="140">
+                        <Button Style="{StaticResource ToolButton}" Height="32" HorizontalContentAlignment="Left" Tag="edit" Click="OnEraserModeOptionClick">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE75C;" FontSize="13" Foreground="{StaticResource TextPrimary}" />
+                                <TextBlock Text="编辑橡皮" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource ToolButton}" Height="32" HorizontalContentAlignment="Left" Tag="original" Click="OnEraserModeOptionClick">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="◌" FontSize="15" Foreground="{StaticResource TextPrimary}" />
+                                <TextBlock Text="原图橡皮" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Popup>
+
+            <!-- 颜色盘 -->
+            <Popup x:Name="ColorPopup" PlacementTarget="{Binding ElementName=ColorButton}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True">
+                <Border Background="{StaticResource CardBg}" BorderBrush="{StaticResource Stroke}" BorderThickness="1" CornerRadius="12" Padding="12" Margin="0,4,0,0">
+                    <Border.Effect><DropShadowEffect BlurRadius="20" ShadowDepth="4" Direction="270" Opacity="0.18" Color="Black" /></Border.Effect>
+                    <StackPanel Width="232">
+                        <Grid x:Name="SvArea" Width="232" Height="130" ClipToBounds="True" Cursor="Cross"
+                              MouseLeftButtonDown="OnSvDown" MouseMove="OnSvMove" MouseLeftButtonUp="OnSvUp">
+                            <Rectangle x:Name="SvHueLayer" />
+                            <Rectangle>
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#FFFFFFFF" Offset="0" />
+                                        <GradientStop Color="#00FFFFFF" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Rectangle>
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#00000000" Offset="0" />
+                                        <GradientStop Color="#FF000000" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Ellipse x:Name="SvMarker" Width="10" Height="10" Stroke="White" StrokeThickness="2"
+                                     HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False" />
+                        </Grid>
+
+                        <Grid Height="16" Margin="0,10,0,0">
+                            <Rectangle RadiusX="8" RadiusY="8">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#FFFF0000" Offset="0" />
+                                        <GradientStop Color="#FFFFFF00" Offset="0.17" />
+                                        <GradientStop Color="#FF00FF00" Offset="0.33" />
+                                        <GradientStop Color="#FF00FFFF" Offset="0.5" />
+                                        <GradientStop Color="#FF0000FF" Offset="0.67" />
+                                        <GradientStop Color="#FFFF00FF" Offset="0.83" />
+                                        <GradientStop Color="#FFFF0000" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Slider x:Name="HueSlider" Style="{StaticResource RingSlider}" Minimum="0" Maximum="360" Value="0"
+                                    VerticalAlignment="Center" ValueChanged="OnHueChanged" />
+                        </Grid>
+
+                        <Grid Height="16" Margin="0,8,0,0">
+                            <Rectangle RadiusX="8" RadiusY="8" Fill="{StaticResource CheckerBrush}" />
+                            <Rectangle x:Name="AlphaGradient" RadiusX="8" RadiusY="8" />
+                            <Slider x:Name="AlphaSlider" Style="{StaticResource RingSlider}" Minimum="0" Maximum="255" Value="255"
+                                    VerticalAlignment="Center" ValueChanged="OnAlphaChanged" />
+                        </Grid>
+
+                        <Grid Height="28" Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="44" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="R" FontSize="8.5" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
+                            <Grid Grid.Column="1" Margin="2,0,6,0">
+                                <Border Height="3" CornerRadius="2" Background="{StaticResource Stroke}" VerticalAlignment="Center" Margin="9,0" />
+                                <Slider x:Name="RSlider" Style="{StaticResource RingSlider}" Minimum="0" Maximum="255" ValueChanged="OnChannelChanged" Tag="R" />
+                            </Grid>
+                            <TextBox x:Name="RBox" Grid.Column="2" Style="{StaticResource InputBox}" Height="24" FontSize="10" TextChanged="OnRgbaChanged" />
+                        </Grid>
+                        <Grid Height="28" Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="44" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="G" FontSize="8.5" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
+                            <Grid Grid.Column="1" Margin="2,0,6,0">
+                                <Border Height="3" CornerRadius="2" Background="{StaticResource Stroke}" VerticalAlignment="Center" Margin="9,0" />
+                                <Slider x:Name="GSlider" Style="{StaticResource RingSlider}" Minimum="0" Maximum="255" ValueChanged="OnChannelChanged" Tag="G" />
+                            </Grid>
+                            <TextBox x:Name="GBox" Grid.Column="2" Style="{StaticResource InputBox}" Height="24" FontSize="10" TextChanged="OnRgbaChanged" />
+                        </Grid>
+                        <Grid Height="28" Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="44" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="B" FontSize="8.5" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
+                            <Grid Grid.Column="1" Margin="2,0,6,0">
+                                <Border Height="3" CornerRadius="2" Background="{StaticResource Stroke}" VerticalAlignment="Center" Margin="9,0" />
+                                <Slider x:Name="BSlider" Style="{StaticResource RingSlider}" Minimum="0" Maximum="255" ValueChanged="OnChannelChanged" Tag="B" />
+                            </Grid>
+                            <TextBox x:Name="BBox" Grid.Column="2" Style="{StaticResource InputBox}" Height="24" FontSize="10" TextChanged="OnRgbaChanged" />
+                        </Grid>
+                        <Grid Height="28" Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="44" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="A" FontSize="8.5" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
+                            <Grid Grid.Column="1" Margin="2,0,6,0">
+                                <Border Height="3" CornerRadius="2" Background="{StaticResource Stroke}" VerticalAlignment="Center" Margin="9,0" />
+                                <Slider x:Name="ASlider" Style="{StaticResource RingSlider}" Minimum="0" Maximum="255" Value="255" ValueChanged="OnAlphaChanged" />
+                            </Grid>
+                            <TextBox x:Name="ABox" Grid.Column="2" Style="{StaticResource InputBox}" Height="24" FontSize="10" TextChanged="OnRgbaChanged" />
+                        </Grid>
+
+                        <TextBox x:Name="HexBox" Style="{StaticResource InputBox}" Height="26" FontSize="10"
+                                 Margin="0,8,0,0" KeyDown="OnHexKeyDown" LostFocus="OnHexLostFocus" />
+
+                        <WrapPanel x:Name="PalettePanel" Width="232" Margin="0,8,0,0" />
+
+                        <Button Style="{StaticResource GhostButton}" Content="屏幕取色" Height="28" Margin="0,8,0,0" Click="OnEyedropperClick" />
+                    </StackPanel>
+                </Border>
+            </Popup>
+        </Grid>
+    </Border>
+</Window>

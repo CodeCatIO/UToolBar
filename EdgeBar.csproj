@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>disable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>EdgeBar</AssemblyName>
+    <RootNamespace>EdgeBar</RootNamespace>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>2.2.0</Version>
+    <FileVersion>2.2.0.0</FileVersion>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <Product>贴边 EdgeBar</Product>
+    <AssemblyTitle>贴边 EdgeBar</AssemblyTitle>
+    <Company>CodeCat</Company>
+    <Copyright>Copyright © 2026 CodeCat</Copyright>
+    <SatelliteResourceLanguages>zh-CN</SatelliteResourceLanguages>
+    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\bg_cream.jpg" />
+    <Resource Include="Assets\bg_sea.jpg" />
+    <Resource Include="Assets\bg_starry.jpg" />
+    <Resource Include="Assets\bg_sakura.jpg" />
+    <Resource Include="Assets\bg_forest.jpg" />
+    <Resource Include="Assets\bg_aurora.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="Vortice.MediaFoundation" Version="3.8.3" />
+  </ItemGroup>
+
+</Project>

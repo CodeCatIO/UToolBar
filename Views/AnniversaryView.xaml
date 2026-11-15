@@ -1,0 +1,157 @@
+<UserControl x:Class="EdgeBar.Views.AnniversaryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontFamily="Microsoft YaHei UI, Segoe UI">
+
+    <UserControl.Resources>
+        <Style x:Key="AnniversaryCard" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Margin" Value="0,0,0,7" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsToday}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource AccentSoft}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="MiniButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
+            <Setter Property="Width" Value="23" />
+            <Setter Property="Height" Value="23" />
+            <Setter Property="Margin" Value="2,0,0,0" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid Margin="14,0,12,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,8">
+                <TextBlock x:Name="CountText" FontSize="10" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
+                <Button x:Name="BtnAddAnniversary" HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Style="{StaticResource BlackPill}" Height="28" Padding="12,0" Click="OnAddClick">
+                    <TextBlock Text="+ 记一个" Foreground="White" FontSize="11" />
+                </Button>
+            </Grid>
+
+            <Grid Grid.Row="1" Height="1" Background="{StaticResource Stroke}" Margin="0,0,0,8" />
+
+            <Grid Grid.Row="2">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,1,4,0">
+                    <ItemsControl x:Name="ItemList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource AnniversaryCard}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Width="46" Height="48" CornerRadius="11" Background="{StaticResource AccentSoft}" VerticalAlignment="Center">
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Month}" FontSize="16" FontWeight="SemiBold"
+                                                           Foreground="{StaticResource Accent}" HorizontalAlignment="Center" />
+                                                <TextBlock Text="月" FontSize="8" Foreground="{StaticResource Accent}"
+                                                           Opacity="0.7" HorizontalAlignment="Center" Margin="0,-2,0,0" />
+                                            </StackPanel>
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1" Margin="10,0,6,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Title}" FontSize="12.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding DateText}" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="0,3,0,0" />
+                                            <TextBlock Text="{Binding RemindText}" FontSize="9" Foreground="{StaticResource TextMuted}" Opacity="0.8" Margin="0,2,0,0" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                            <Border CornerRadius="8" Background="{StaticResource AccentFaint}" Padding="7,3" HorizontalAlignment="Right">
+                                                <TextBlock Text="{Binding CountdownText}" FontSize="9.5" Foreground="{StaticResource Accent}" />
+                                            </Border>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
+                                                <Button Style="{StaticResource MiniButton}" AutomationProperties.AutomationId="BtnEditAnniversary" Click="OnEditClick" ToolTip="编辑">
+                                                    <Path Data="{StaticResource IconEdit}" Style="{StaticResource StrokeIcon}" Width="11" Height="11" />
+                                                </Button>
+                                                <Button Style="{StaticResource MiniButton}" Click="OnDeleteClick" ToolTip="删除">
+                                                    <Path Data="{StaticResource IconTrash}" Style="{StaticResource StrokeIcon}" Width="11" Height="11" />
+                                                </Button>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <StackPanel x:Name="EmptyHint" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed">
+                    <TextBlock Text="还没有记住任何日子" FontSize="12.5" Foreground="{StaticResource TextSecondary}" HorizontalAlignment="Center" />
+                    <TextBlock Text="生日、纪念日、还款日都可以放这里" FontSize="10" Foreground="{StaticResource TextMuted}" Margin="0,5,0,0" HorizontalAlignment="Center" />
+                    <Button Style="{StaticResource SoftButton}" Content="记第一个" HorizontalAlignment="Center" Margin="0,12,0,0" Click="OnAddClick" />
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Grid.Row="3" Text="公历、农历都能记，提前提醒不会忘" FontSize="9" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Margin="0,6,0,2" />
+        </Grid>
+
+        <!-- 编辑浮层 -->
+        <Grid x:Name="EditOverlay" Visibility="Collapsed" Background="#59000000">
+            <Border Width="302" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Background="{StaticResource CardBg}" BorderBrush="{StaticResource StrokeStrong}" BorderThickness="1" CornerRadius="16" Padding="16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="24" ShadowDepth="6" Direction="270" Opacity="0.18" Color="#99372A1C" />
+                </Border.Effect>
+                <StackPanel>
+                    <Grid Margin="0,0,0,12">
+                        <TextBlock x:Name="EditHeader" Text="记一个重要的日子" FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <Button HorizontalAlignment="Right" Style="{StaticResource IconButton}" Width="26" Height="26" Click="OnCancelClick">
+                            <Path Data="{StaticResource IconClose}" Style="{StaticResource StrokeIcon}" Width="10" Height="10" />
+                        </Button>
+                    </Grid>
+
+                    <TextBlock Text="名称" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                    <TextBox x:Name="NameBox" Style="{StaticResource InputBox}" Tag="比如：妈妈生日" Margin="0,0,0,10" />
+
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="月份" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                            <ComboBox x:Name="MonthCombo" Style="{StaticResource DarkComboBox}" SelectionChanged="OnDatePartChanged" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="日期" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                            <ComboBox x:Name="DayCombo" Style="{StaticResource DarkComboBox}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,10">
+                        <TextBlock Text="农历生日" FontSize="10.5" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" />
+                        <ToggleButton x:Name="LunarSwitch" Style="{StaticResource Switch}" Width="34" Height="20"
+                                      HorizontalAlignment="Right" Checked="OnLunarChanged" Unchecked="OnLunarChanged" />
+                    </Grid>
+
+                    <TextBlock Text="提前提醒" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                    <ComboBox x:Name="RemindCombo" Style="{StaticResource DarkComboBox}" Margin="0,0,0,16" />
+
+                    <Grid>
+                        <Button x:Name="DeleteButton" Style="{StaticResource GhostButton}" Content="删除" Foreground="{StaticResource Danger}"
+                                HorizontalAlignment="Left" Visibility="Collapsed" Click="OnDeleteEditClick" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Style="{StaticResource GhostButton}" Content="取消" Margin="0,0,6,0" Click="OnCancelClick" />
+                            <Button Style="{StaticResource PrimaryButton}" Content="保存" Click="OnSaveClick" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

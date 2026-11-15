@@ -1,0 +1,165 @@
+<UserControl x:Class="EdgeBar.Views.CalendarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontFamily="Microsoft YaHei UI, Segoe UI">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <Style x:Key="DayCell" TargetType="Border">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource CardHover}" />
+                </Trigger>
+                <DataTrigger Binding="{Binding IsCurrentMonth}" Value="False">
+                    <Setter Property="Opacity" Value="0.3" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsToday}" Value="True">
+                    <Setter Property="Background" Value="#FFEAF3FB" />
+                    <Setter Property="BorderBrush" Value="#CC8FB8DC" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource AccentSoft}" />
+                    <Setter Property="BorderBrush" Value="#CC8FB8DC" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="WeekLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="Foreground" Value="{StaticResource TextMuted}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="14,0,12,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 今日信息 -->
+        <Grid Grid.Row="0" Margin="0,0,0,8">
+            <TextBlock x:Name="TodaySubText" FontSize="9.5" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+            <Button x:Name="BtnToday" HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Style="{StaticResource GhostButton}" Height="28" Padding="12,0" Content="回到今天"
+                    Foreground="{StaticResource AccentDeep}" BorderBrush="{StaticResource Accent}" Click="OnTodayClick" />
+        </Grid>
+
+        <!-- 月历 -->
+        <Border Grid.Row="1" Style="{StaticResource Card}" Padding="8,6,8,8" Margin="0,0,0,8">
+            <StackPanel>
+                <Grid Margin="2,0,2,6">
+                    <Button HorizontalAlignment="Left" Style="{StaticResource IconButton}" Width="26" Height="26" Click="OnPrevMonth">
+                        <Path Data="{StaticResource IconChevronLeft}" Style="{StaticResource StrokeIcon}" Width="10" Height="10" />
+                    </Button>
+                    <TextBlock x:Name="MonthTitle" Text="2026 年 11 月" FontSize="12" FontWeight="SemiBold"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Button HorizontalAlignment="Right" Style="{StaticResource IconButton}" Width="26" Height="26" Click="OnNextMonth">
+                        <Path Data="{StaticResource IconChevronRight}" Style="{StaticResource StrokeIcon}" Width="10" Height="10" />
+                    </Button>
+                </Grid>
+
+                <UniformGrid Columns="7" Rows="1">
+                    <TextBlock Text="一" Style="{StaticResource WeekLabel}" />
+                    <TextBlock Text="二" Style="{StaticResource WeekLabel}" />
+                    <TextBlock Text="三" Style="{StaticResource WeekLabel}" />
+                    <TextBlock Text="四" Style="{StaticResource WeekLabel}" />
+                    <TextBlock Text="五" Style="{StaticResource WeekLabel}" />
+                    <TextBlock Text="六" Style="{StaticResource WeekLabel}" />
+                    <TextBlock Text="日" Style="{StaticResource WeekLabel}" />
+                </UniformGrid>
+
+                <ItemsControl x:Name="DayGrid" Height="272">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="7" Rows="6" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource DayCell}" Margin="1" MouseLeftButtonDown="OnDayClick">
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Day}" FontSize="12" HorizontalAlignment="Center" />
+                                        <TextBlock Text="{Binding SubText}" FontSize="7.5" Foreground="{StaticResource TextMuted}"
+                                                   HorizontalAlignment="Center" Margin="0,1,0,0" MaxWidth="40"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <Border HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,3,0"
+                                            CornerRadius="3" Padding="2,0"
+                                            Visibility="{Binding HasBadge, Converter={StaticResource BoolToVis}}">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{StaticResource Accent}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Badge}" Value="班">
+                                                        <Setter Property="Background" Value="{StaticResource Orange}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Text="{Binding Badge}" FontSize="6.5" Foreground="#FF0B1512" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
+        <!-- 选中日详情 -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <Border Style="{StaticResource Card}" Padding="14,12" VerticalAlignment="Top">
+                    <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="62" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock x:Name="DetailDay" Text="1" FontSize="30" FontWeight="SemiBold" />
+                        <TextBlock x:Name="DetailWeek" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,2,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="6,2,0,0">
+                        <TextBlock x:Name="DetailLunar" FontSize="11.5" />
+                        <TextBlock x:Name="DetailEvents" FontSize="9.5" Foreground="{StaticResource Accent}" Margin="0,3,0,0" TextWrapping="Wrap" />
+                        <TextBlock x:Name="DetailHoliday" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="0,3,0,0" TextWrapping="Wrap" />
+
+                        <Border Height="1" Background="{StaticResource Stroke}" Margin="0,9,0,8" />
+
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="宜" FontSize="10" Foreground="{StaticResource Accent}" />
+                            <TextBlock x:Name="DetailYi" Grid.Column="1" FontSize="10" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="忌" FontSize="10" Foreground="{StaticResource Danger}" />
+                            <TextBlock x:Name="DetailJi" Grid.Column="1" FontSize="10" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" />
+                        </Grid>
+                    </StackPanel>
+                    </Grid>
+                </Border>
+                <TextBlock Text="「休 / 班」为法定节假日调休标记 · 节气按北京时间计算"
+                           FontSize="9" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Margin="0,8,0,2" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

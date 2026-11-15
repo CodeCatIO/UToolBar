@@ -1,0 +1,458 @@
+﻿<UserControl x:Class="EdgeBar.Views.TodoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:EdgeBar.Converters"
+             FontFamily="Microsoft YaHei UI, Segoe UI">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:BottomMarginConverter x:Key="BottomMargin" />
+
+        <Style x:Key="TabPill" TargetType="ToggleButton">
+            <Setter Property="Height" Value="31" />
+            <Setter Property="Margin" Value="1,0" />
+            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Bd" CornerRadius="8" Background="Transparent" BorderBrush="Transparent" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentSoft}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}" />
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TaskTitle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TaskText}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Done}" Value="True">
+                    <Setter Property="TextDecorations" Value="Strikethrough" />
+                    <Setter Property="Foreground" Value="{StaticResource TaskDone}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TodoCard" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource GlassFill}" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="12,8,8,8" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource GlassFillHover}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="MiniButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
+            <Setter Property="Width" Value="26" />
+            <Setter Property="Height" Value="26" />
+            <Setter Property="Margin" Value="2,0,0,0" />
+        </Style>
+
+        <Style x:Key="MiniIcon" TargetType="Path" BasedOn="{StaticResource StrokeIcon}">
+            <Setter Property="Width" Value="14" />
+            <Setter Property="Height" Value="14" />
+            <Setter Property="Stroke" Value="#FF7A8794" />
+            <Setter Property="StrokeThickness" Value="1.4" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- 日 / 周 / 月 / 记节日 -->
+        <Border Grid.Row="0" Margin="15,0,12,0" Height="39" Background="{StaticResource GlassStrip}" CornerRadius="10" Padding="3,3">
+            <UniformGrid Columns="4">
+                <ToggleButton x:Name="TabDay" Style="{StaticResource TabPill}" Tag="0" Content="日待办" IsChecked="True" Click="OnScopeClick" />
+                <ToggleButton x:Name="TabWeek" Style="{StaticResource TabPill}" Tag="1" Content="周待办" Click="OnScopeClick" />
+                <ToggleButton x:Name="TabMonth" Style="{StaticResource TabPill}" Tag="2" Content="月待办" Click="OnScopeClick" />
+                <ToggleButton x:Name="TabFestival" Style="{StaticResource TabPill}" Tag="3" Content="记节日" Click="OnScopeClick" />
+            </UniformGrid>
+        </Border>
+
+        <!-- 日期条 / 周月导航 -->
+        <StackPanel Grid.Row="1">
+            <ScrollViewer x:Name="DateScroll" Margin="15,8,0,0" Height="54"
+                          HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled"
+                          CanContentScroll="False">
+                <StackPanel x:Name="DateStrip" Orientation="Horizontal" />
+            </ScrollViewer>
+
+            <Border x:Name="PeriodNav" Visibility="Collapsed" Margin="15,8,12,0" Height="42"
+                    Background="{StaticResource GlassStrip}" CornerRadius="10">
+                <Grid>
+                    <Button x:Name="BtnPrevPeriod" Style="{StaticResource IconButton}" Width="36" Height="36"
+                            HorizontalAlignment="Left" Margin="3,0,0,0" Click="OnPrevPeriod" ToolTip="上一段">
+                        <Path Data="{StaticResource IconChevronLeft}" Style="{StaticResource StrokeIcon}" Width="8" Height="9" />
+                    </Button>
+                    <TextBlock x:Name="PeriodText" FontSize="11.5" FontWeight="SemiBold"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Button x:Name="BtnNextPeriod" Style="{StaticResource IconButton}" Width="36" Height="36"
+                            HorizontalAlignment="Right" Margin="0,0,3,0" Click="OnNextPeriod" ToolTip="下一段">
+                        <Path Data="{StaticResource IconChevronRight}" Style="{StaticResource StrokeIcon}" Width="8" Height="9" />
+                    </Button>
+                </Grid>
+            </Border>
+        </StackPanel>
+
+        <!-- 标题行 -->
+        <Border x:Name="TitlePillHost" Grid.Row="2" Background="{StaticResource GlassPill}" CornerRadius="9" Padding="8,3" Margin="15,10,12,5"
+                HorizontalAlignment="Left">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="ScopeTitle" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TaskText}" VerticalAlignment="Center" />
+                <TextBlock x:Name="ScopeCount" FontSize="11" Foreground="{StaticResource TaskMeta}" Margin="6,0,0,1" VerticalAlignment="Bottom" />
+            </StackPanel>
+        </Border>
+
+        <!-- 列表 -->
+        <Grid Grid.Row="3">
+            <ScrollViewer x:Name="ListScroll" Margin="15,0,10,0" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled" Padding="0,0,2,0">
+                <ItemsControl x:Name="GroupList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Title}" FontSize="10" Foreground="{StaticResource TextMuted}" Margin="3,3,0,6"
+                                           Visibility="{Binding ShowTitle, Converter={StaticResource BoolToVis}}" />
+                                <ItemsControl ItemsSource="{Binding Items}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Style="{StaticResource TodoCard}"
+                                                    MinHeight="{Binding DataContext.Settings.TaskRowHeight, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Margin="{Binding DataContext.Settings.TaskSpacing, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BottomMargin}}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <ToggleButton Grid.Column="0" Style="{StaticResource TaskCheck}"
+                                                                  IsChecked="{Binding Done, Mode=TwoWay}"
+                                                                  VerticalAlignment="Center" Margin="0,0,9,0"
+                                                                  Click="OnTaskChecked" />
+
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding DisplayTitle}" Style="{StaticResource TaskTitle}"
+                                                                   Cursor="Hand" ToolTip="点击修改内容" MouseLeftButtonUp="OnTaskTitleClick"
+                                                                   FontSize="{Binding DataContext.Settings.TaskFontSize, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                   FontFamily="{Binding DataContext.Settings.TaskFont, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                                        <TextBlock Text="{Binding MetaText}" FontSize="10" Foreground="{StaticResource TaskMeta}"
+                                                                   Margin="0,2,0,0" TextWrapping="Wrap"
+                                                                   Visibility="{Binding HasMeta, Converter={StaticResource BoolToVis}}" />
+
+                                                        <ItemsControl ItemsSource="{Binding Subtasks}" Margin="0,4,0,0"
+                                                                      Visibility="{Binding HasSubtasks, Converter={StaticResource BoolToVis}}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Grid Margin="0,2,0,0">
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="Auto" />
+                                                                            <ColumnDefinition Width="*" />
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <ToggleButton Style="{StaticResource TaskCheck}" Width="14" Height="14"
+                                                                                      IsChecked="{Binding Done, Mode=TwoWay}" Click="OnSubtaskClick" />
+                                                                        <TextBlock Grid.Column="1" Text="{Binding Title}" FontSize="10"
+                                                                                   Margin="7,0,4,0" TextWrapping="Wrap" VerticalAlignment="Center">
+                                                                            <TextBlock.Style>
+                                                                                <Style TargetType="TextBlock">
+                                                                                    <Setter Property="Foreground" Value="{StaticResource TaskMeta}" />
+                                                                                    <Style.Triggers>
+                                                                                        <DataTrigger Binding="{Binding Done}" Value="True">
+                                                                                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                                                            <Setter Property="Foreground" Value="{StaticResource TaskDone}" />
+                                                                                        </DataTrigger>
+                                                                                    </Style.Triggers>
+                                                                                </Style>
+                                                                            </TextBlock.Style>
+                                                                        </TextBlock>
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <Button Style="{StaticResource MiniButton}" Click="OnAddSubtaskClick" ToolTip="添加下级">
+                                                            <Path Data="{StaticResource IconPlus}" Style="{StaticResource MiniIcon}" />
+                                                        </Button>
+                                                        <Button Style="{StaticResource MiniButton}" Click="OnEditClick" ToolTip="任务设置">
+                                                            <Path Data="{StaticResource IconGear}" Style="{StaticResource MiniIcon}" />
+                                                        </Button>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- 生日 / 纪念日 -->
+            <ScrollViewer x:Name="MemorialScroll" Visibility="Collapsed" Margin="15,0,10,0"
+                          VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <Grid Margin="2,4,2,8">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource IconGift}" Style="{StaticResource StrokeIcon}" Width="15" Height="15" Stroke="{StaticResource TaskText}" />
+                            <TextBlock Text="生日" FontSize="12.5" FontWeight="SemiBold" Margin="6,0,0,0" Foreground="{StaticResource TaskText}" VerticalAlignment="Center" />
+                            <TextBlock x:Name="BirthdayCount" Text="0" FontSize="10" Foreground="{StaticResource TaskMeta}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <Path Data="{StaticResource IconChevronDown}" Style="{StaticResource StrokeIcon}" Width="9" Height="9"
+                              HorizontalAlignment="Right" VerticalAlignment="Center" Stroke="{StaticResource TaskMeta}" />
+                    </Grid>
+
+                    <ItemsControl x:Name="BirthdayList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource TodoCard}" MinHeight="46" Margin="0,0,0,6" Padding="11,7,11,7">
+                                    <Grid>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" FontSize="12.5" Foreground="{StaticResource TaskText}" />
+                                            <TextBlock Text="{Binding DateText}" FontSize="9.5" Foreground="{StaticResource TaskMeta}" Margin="0,2,0,0" />
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding CountdownText}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                   FontSize="10" Foreground="{StaticResource AccentDeep}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Grid x:Name="BirthdayEmpty" Height="86" Margin="0,0,0,12">
+                        <Rectangle Stroke="{StaticResource Stroke}" StrokeThickness="1" StrokeDashArray="3 3"
+                                   RadiusX="10" RadiusY="10" Fill="{StaticResource GlassFill}" />
+                        <TextBlock Text="还没有记录生日，点下方「添加生日」记下家人和朋友的生日吧。" FontSize="11"
+                                   Foreground="{StaticResource TaskMeta}" TextWrapping="Wrap" TextAlignment="Center"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Width="230" />
+                    </Grid>
+
+                    <Grid Margin="2,4,2,8">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource IconStar}" Style="{StaticResource StrokeIcon}" Width="15" Height="15" Stroke="{StaticResource TaskText}" />
+                            <TextBlock Text="纪念日" FontSize="12.5" FontWeight="SemiBold" Margin="6,0,0,0" Foreground="{StaticResource TaskText}" VerticalAlignment="Center" />
+                            <TextBlock x:Name="MemorialCount" Text="0" FontSize="10" Foreground="{StaticResource TaskMeta}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <Path Data="{StaticResource IconChevronDown}" Style="{StaticResource StrokeIcon}" Width="9" Height="9"
+                              HorizontalAlignment="Right" VerticalAlignment="Center" Stroke="{StaticResource TaskMeta}" />
+                    </Grid>
+
+                    <ItemsControl x:Name="MemorialList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource TodoCard}" MinHeight="46" Margin="0,0,0,6" Padding="11,7,11,7">
+                                    <Grid>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" FontSize="12.5" Foreground="{StaticResource TaskText}" />
+                                            <TextBlock Text="{Binding DateText}" FontSize="9.5" Foreground="{StaticResource TaskMeta}" Margin="0,2,0,0" />
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding CountdownText}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                   FontSize="10" Foreground="{StaticResource AccentDeep}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Grid x:Name="MemorialEmpty" Height="86" Margin="0,0,0,10">
+                        <Rectangle Stroke="{StaticResource Stroke}" StrokeThickness="1" StrokeDashArray="3 3"
+                                   RadiusX="10" RadiusY="10" Fill="{StaticResource GlassFill}" />
+                        <TextBlock Text="还没有记录纪念日，点下方「添加纪念日」记下值得纪念的日子吧。" FontSize="11"
+                                   Foreground="{StaticResource TaskMeta}" TextWrapping="Wrap" TextAlignment="Center"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Width="230" />
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,12">
+                        <Button Style="{StaticResource BlackPill}" Height="30" Padding="14,0" Click="OnAddBirthday">
+                            <TextBlock Text="+ 添加生日" Foreground="White" FontSize="11.5" />
+                        </Button>
+                        <Button Style="{StaticResource GhostButton}" Height="30" Margin="8,0,0,0" Content="+ 添加纪念日" Click="OnAddMemorial" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Grid x:Name="EmptyHint" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="96"
+                  Margin="0,2,0,0" Visibility="Collapsed">
+                <Rectangle Stroke="{StaticResource Stroke}" StrokeThickness="1" StrokeDashArray="3 3"
+                           RadiusX="10" RadiusY="10" Fill="{StaticResource GlassFill}" />
+                <TextBlock x:Name="EmptyText" Text="今天暂无待办。" FontSize="11.5" Foreground="{StaticResource TaskMeta}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+        </Grid>
+
+        <!-- 底部添加 -->
+        <StackPanel Grid.Row="4">
+            <Border x:Name="AddBar" Visibility="Collapsed" Margin="15,4,12,6" Padding="6,5,6,5"
+                    Background="{StaticResource GlassFill}" CornerRadius="12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="QuickAddBox" Style="{StaticResource InputBox}" BorderThickness="0" Background="Transparent"
+                             Tag="添加事项，回车保存" KeyDown="OnQuickAddKeyDown" />
+                    <Button Grid.Column="1" Style="{StaticResource BlackPill}" Height="30" Padding="12,0" Click="OnQuickAddClick">
+                        <TextBlock Text="添加" Foreground="White" FontSize="11" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <Button x:Name="AddButton" Style="{StaticResource BlackPill}" Width="118" HorizontalAlignment="Center"
+                    Margin="0,2,0,14" Click="OnShowAddBar">
+                <StackPanel Orientation="Horizontal">
+                    <Path Data="{StaticResource IconPlus}" Stroke="White" StrokeThickness="1.6"
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" Fill="Transparent"
+                          Stretch="Uniform" Width="10" Height="10" VerticalAlignment="Center" />
+                    <TextBlock Text="添加事项" Foreground="White" FontSize="12.5" Margin="6,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <!-- 编辑浮层 -->
+        <Grid x:Name="EditOverlay" Grid.RowSpan="5" Visibility="Collapsed" Background="#59000000">
+            <Border Width="296" MaxHeight="560" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Background="{StaticResource CardBg}" CornerRadius="18" Padding="16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="28" ShadowDepth="8" Direction="270" Opacity="0.2" Color="#FF20364A" />
+                </Border.Effect>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,12">
+                            <TextBlock Text="任务设置" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <Button HorizontalAlignment="Right" Style="{StaticResource IconButton}" Width="26" Height="26" Click="OnEditCancel">
+                                <Path Data="{StaticResource IconClose}" Style="{StaticResource StrokeIcon}" Width="9" Height="9" />
+                            </Button>
+                        </Grid>
+
+                        <TextBlock Text="标题" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                        <TextBox x:Name="EditTitleBox" Style="{StaticResource InputBox}" Tag="要做什么" Margin="0,0,0,10" />
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="日期" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                                <TextBox x:Name="EditDateBox" Style="{StaticResource InputBox}" Tag="yyyy-MM-dd" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="提醒" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                                <TextBox x:Name="EditRemindBox" Style="{StaticResource InputBox}" Tag="HH:mm 可留空" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="重复" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                        <WrapPanel Margin="0,0,0,4">
+                            <ToggleButton x:Name="RepeatNone" Style="{StaticResource ChipButton}" Tag="0" Content="不重复" IsChecked="True" Click="OnRepeatChip" />
+                            <ToggleButton x:Name="RepeatDaily" Style="{StaticResource ChipButton}" Tag="1" Content="每天" Click="OnRepeatChip" />
+                            <ToggleButton x:Name="RepeatWeekly" Style="{StaticResource ChipButton}" Tag="2" Content="每周" Click="OnRepeatChip" />
+                            <ToggleButton x:Name="RepeatMonthly" Style="{StaticResource ChipButton}" Tag="3" Content="每月" Click="OnRepeatChip" />
+                        </WrapPanel>
+
+                        <Grid Margin="0,2,0,10">
+                            <TextBlock Text="重复时跳过休息日" FontSize="10.5" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" />
+                            <ToggleButton x:Name="SkipHolidaySwitch" Style="{StaticResource Switch}" Width="34" Height="20" HorizontalAlignment="Right" />
+                        </Grid>
+
+                        <TextBlock Text="子任务" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                        <ItemsControl x:Name="EditSubtaskList" Margin="0,0,0,4">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ToggleButton Style="{StaticResource TaskCheck}" Width="16" Height="16" IsChecked="{Binding Done, Mode=TwoWay}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Title}" FontSize="11" Foreground="{StaticResource TextSecondary}"
+                                                   Margin="8,0,4,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                        <Button Grid.Column="2" Style="{StaticResource MiniButton}" Width="20" Height="20" Click="OnEditSubtaskDelete">
+                                            <Path Data="{StaticResource IconClose}" Style="{StaticResource StrokeIcon}" Width="7" Height="7" />
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="NewSubtaskBox" Style="{StaticResource InputBox}" Tag="加一个子项，回车" KeyDown="OnNewSubtaskKeyDown" />
+                            <Button Grid.Column="1" Style="{StaticResource SoftButton}" Content="添加" Margin="6,0,0,0" Click="OnAddSubtask" />
+                        </Grid>
+
+                        <Grid>
+                            <Button Style="{StaticResource GhostButton}" Content="删除" Foreground="{StaticResource Danger}" HorizontalAlignment="Left" Click="OnEditDelete" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Style="{StaticResource GhostButton}" Content="取消" Margin="0,0,6,0" Click="OnEditCancel" />
+                                <Button Style="{StaticResource BlackPill}" Height="30" Padding="14,0" Click="OnEditSave">
+                                    <TextBlock Text="保存" Foreground="White" FontSize="11" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- 生日 / 纪念日添加浮层 -->
+        <Grid x:Name="MemorialOverlay" Grid.RowSpan="5" Visibility="Collapsed" Background="#59000000">
+            <Border Width="280" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Background="{StaticResource CardBg}" CornerRadius="16" Padding="16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="28" ShadowDepth="8" Direction="270" Opacity="0.2" Color="#FF20364A" />
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock x:Name="MemorialTitle" Text="添加生日" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,12" />
+                    <TextBlock Text="名称" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                    <TextBox x:Name="MemorialNameBox" Style="{StaticResource InputBox}" Tag="例如：妈妈" Margin="0,0,0,10" />
+                    <TextBlock Text="日期（月-日 或 年-月-日）" FontSize="9.5" Foreground="{StaticResource TextMuted}" Margin="2,0,0,5" />
+                    <TextBox x:Name="MemorialDateBox" Style="{StaticResource InputBox}" Tag="例如：5-20" Margin="0,0,0,14" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Style="{StaticResource GhostButton}" Content="取消" Margin="0,0,6,0" Click="OnMemorialCancel" />
+                        <Button Style="{StaticResource BlackPill}" Height="30" Padding="14,0" Click="OnMemorialSave">
+                            <TextBlock Text="保存" Foreground="White" FontSize="11" />
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

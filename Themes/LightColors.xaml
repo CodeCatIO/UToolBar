@@ -1,0 +1,69 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="TextPrimary" Color="#FF2E3742" />
+    <SolidColorBrush x:Key="TextSecondary" Color="#FF6B7686" />
+    <SolidColorBrush x:Key="TextMuted" Color="#FF9BA5B2" />
+    <SolidColorBrush x:Key="Accent" Color="#FF8FB8DC" />
+    <SolidColorBrush x:Key="AccentDeep" Color="#FF5E8CB8" />
+    <SolidColorBrush x:Key="AccentSoft" Color="#FFEAF3FB" />
+    <SolidColorBrush x:Key="AccentFaint" Color="#FFF6FAFD" />
+    <SolidColorBrush x:Key="CardBg" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="CardHover" Color="#FFF8FAFC" />
+    <SolidColorBrush x:Key="CreamBg" Color="#FFFBF7F1" />
+    <SolidColorBrush x:Key="Stroke" Color="#FFF0EAE1" />
+    <SolidColorBrush x:Key="StrokeStrong" Color="#FFE0D7CA" />
+    <SolidColorBrush x:Key="InputBg" Color="#FFF9F6F1" />
+    <SolidColorBrush x:Key="Danger" Color="#FFDD7C7C" />
+    <SolidColorBrush x:Key="Gold" Color="#FFE7B34C" />
+    <SolidColorBrush x:Key="Orange" Color="#FFE3A163" />
+    <SolidColorBrush x:Key="Blue" Color="#FF8FB8DC" />
+    <SolidColorBrush x:Key="Lilac" Color="#FFBFB0E6" />
+    <SolidColorBrush x:Key="SettingsBackdrop" Color="#F7FDFBF7" />
+    <SolidColorBrush x:Key="RailBg" Color="#D9FBF7F1" />
+    <SolidColorBrush x:Key="AppearanceSelected" Color="#FFEAF3FB" />
+    <SolidColorBrush x:Key="AppearanceSelectedText" Color="#FF1E2429" />
+    <SolidColorBrush x:Key="IconInk" Color="#FF4F5C69" />
+    <SolidColorBrush x:Key="DockLabelBrush" Color="#FF61707E" />
+    <SolidColorBrush x:Key="Ink" Color="#FF1E1E20" />
+    <SolidColorBrush x:Key="GlassStrip" Color="#D9FFFFFF" />
+    <SolidColorBrush x:Key="GlassFill" Color="#E8FFFFFF" />
+    <SolidColorBrush x:Key="GlassFillHover" Color="#F7FFFFFF" />
+    <SolidColorBrush x:Key="GlassPill" Color="#B8FFFFFF" />
+    <SolidColorBrush x:Key="TaskText" Color="#FF2B3037" />
+    <SolidColorBrush x:Key="TaskMeta" Color="#FF8D98A3" />
+    <SolidColorBrush x:Key="TaskDone" Color="#FF9AA4AE" />
+    <SolidColorBrush x:Key="CheckRing" Color="#FFD8D1C6" />
+    <SolidColorBrush x:Key="ModeScrim" Color="#33FFFFFF" />
+    <SolidColorBrush x:Key="IconHoverBg" Color="#FFF2F6FA" />
+    <SolidColorBrush x:Key="SwitchTrack" Color="#FFEAE4DB" />
+
+    <LinearGradientBrush x:Key="TopScrim" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#A6FFFFFF" Offset="0" />
+        <GradientStop Color="#4DFFFFFF" Offset="0.6" />
+        <GradientStop Color="#00FFFFFF" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="AvatarGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#FFA9D6F5" Offset="0" />
+        <GradientStop Color="#FF6FA6D6" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PanelBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FFF6FAFD" Offset="0" />
+        <GradientStop Color="#FFFDFBF7" Offset="0.42" />
+        <GradientStop Color="#FFFAF5EC" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#FFB6D4EE" Offset="0" />
+        <GradientStop Color="#FF8FB8DC" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="EdgeBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FFFFFDF9" Offset="0" />
+        <GradientStop Color="#FFF2F8FD" Offset="0.55" />
+        <GradientStop Color="#FFE4F0FA" Offset="1" />
+    </LinearGradientBrush>
+
+</ResourceDictionary>
