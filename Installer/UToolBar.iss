@@ -1,5 +1,5 @@
 ﻿#define MyAppName "UToolBar"
-#define MyAppVersion "2.3.0"
+#define MyAppVersion "2.3.1"
 #define MyAppPublisher "CodeCat"
 #define MyAppExeName "UToolBar.exe"
 
@@ -14,7 +14,7 @@ DisableDirPage=no
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputDir=Output
-OutputBaseFilename=UToolBar-setup-2.3.0
+OutputBaseFilename=UToolBar-setup-2.3.1
 SetupIconFile=..\Assets\app.ico
 UninstallDisplayIcon={app}\UToolBar.exe
 Compression=lzma2/ultra64
@@ -27,7 +27,7 @@ CloseApplications=no
 RestartApplications=no
 UsePreviousAppDir=no
 AllowNoIcons=yes
-VersionInfoVersion=2.3.0.0
+VersionInfoVersion=2.3.1.0
 VersionInfoProductName={#MyAppName}
 VersionInfoCompany={#MyAppPublisher}
 
@@ -68,3 +68,4 @@ begin
     ewWaitUntilTerminated, ResultCode);
   Result := True;
 end;
+

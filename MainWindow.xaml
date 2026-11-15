@@ -153,21 +153,22 @@
             </Grid>
         </Border>
 
-        <!-- 贴边小把手：跟着抽屉一起滑，右侧与面板连成一体 -->
+        <!-- 贴边小把手：沿用主题壁纸，左侧圆角，和面板连成一体 -->
         <Border x:Name="HandleTab" Grid.Column="0" Width="40" Height="84"
                 HorizontalAlignment="Right" VerticalAlignment="Top"
                 CornerRadius="16,0,0,16"
-                Background="{StaticResource PanelBrush}"
+                Background="#F7FAFD"
                 Cursor="Hand"
                 MouseLeftButtonUp="OnHandleClick"
                 ToolTip="收起 / 展开 UTB">
-            <Border Width="24" Height="24" CornerRadius="8" Background="{StaticResource AvatarGradient}"
-                    HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Path Data="{StaticResource IconPanel}" Stroke="White" StrokeThickness="1.8"
+            <Grid>
+                <Border x:Name="HandleFrost" Background="#A6FFFFFF" CornerRadius="16,0,0,16" />
+                <Path x:Name="HandleChevron" Data="M10,2 L4,9 L10,16"
+                      Stroke="#2B2B31" StrokeThickness="2.2"
                       StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                      Fill="Transparent" Stretch="Uniform" Width="13" Height="13"
+                      Stretch="Uniform" Width="8" Height="13"
                       HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Border>
+            </Grid>
         </Border>
         </Grid>
     </Grid>

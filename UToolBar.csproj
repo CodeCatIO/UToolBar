@@ -12,9 +12,9 @@
     <RootNamespace>UToolBar</RootNamespace>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>2.3.0</Version>
-    <FileVersion>2.3.0.0</FileVersion>
-    <AssemblyVersion>2.3.0.0</AssemblyVersion>
+    <Version>2.3.1</Version>
+    <FileVersion>2.3.1.0</FileVersion>
+    <AssemblyVersion>2.3.1.0</AssemblyVersion>
     <Product>UToolBar</Product>
     <AssemblyTitle>UToolBar · 统一工具条</AssemblyTitle>
     <Company>CodeCat</Company>
@@ -45,3 +45,4 @@
   </ItemGroup>
 
 </Project>
+

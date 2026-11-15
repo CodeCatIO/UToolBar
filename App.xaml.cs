@@ -120,6 +120,7 @@ public partial class App : Application
         State = StorageService.Load();
         State.Attach();
         State.Changed += () => StorageService.SaveLater(State);
+        Trace("data " + StorageService.Folder);
 
         // 2.2 起使用插画背景主题，旧主题名统一迁移到奶油蓝
         var legacyThemes = new[] { "Plain", "ClearBlue", "FarMountains", "Waves", "Leaves", "Cyber", "Anime" };

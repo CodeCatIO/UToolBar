@@ -574,13 +574,25 @@ public partial class MainWindow : Window
             image.UriSource = new Uri($"pack://application:,,,/Assets/bg_{key.ToLowerInvariant()}.jpg");
             image.EndInit();
             image.Freeze();
-            ThemeBackdrop.Fill = new ImageBrush(image) { Stretch = Stretch.UniformToFill };
+            var backdrop = new ImageBrush(image) { Stretch = Stretch.UniformToFill };
+            backdrop.Freeze();
+            ThemeBackdrop.Fill = backdrop;
             ThemeBackdrop.Visibility = Visibility.Visible;
+            HandleTab.Background = backdrop;
+            HandleFrost.Background = App.IsDarkMode
+                ? new SolidColorBrush(Color.FromArgb(0x59, 0x10, 0x13, 0x18))
+                : new SolidColorBrush(Color.FromArgb(0xA6, 0xFF, 0xFF, 0xFF));
+            HandleChevron.Stroke = App.IsDarkMode
+                ? Brushes.White
+                : new SolidColorBrush(Color.FromRgb(0x2B, 0x2B, 0x31));
         }
         catch
         {
             ThemeBackdrop.Fill = new SolidColorBrush(Color.FromRgb(0xF7, 0xFA, 0xFD));
             ThemeBackdrop.Visibility = Visibility.Visible;
+            HandleTab.Background = new SolidColorBrush(Color.FromRgb(0xF7, 0xFA, 0xFD));
+            HandleFrost.Background = new SolidColorBrush(Color.FromArgb(0xA6, 0xFF, 0xFF, 0xFF));
+            HandleChevron.Stroke = new SolidColorBrush(Color.FromRgb(0x2B, 0x2B, 0x31));
         }
 
         if (save)

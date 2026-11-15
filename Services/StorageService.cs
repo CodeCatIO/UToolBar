@@ -41,6 +41,15 @@ public static class StorageService
         {
             if (_folder != null) return _folder;
 
+            // 演示/截图用：只对当前进程生效，不写入用户配置
+            var overrideFolder = Environment.GetEnvironmentVariable("UTB_DATA_DIR");
+            if (!string.IsNullOrWhiteSpace(overrideFolder))
+            {
+                Directory.CreateDirectory(overrideFolder);
+                _folder = overrideFolder;
+                return _folder;
+            }
+
             MigrateFromEdgeBar();
             _folder = DefaultFolder;
             try
