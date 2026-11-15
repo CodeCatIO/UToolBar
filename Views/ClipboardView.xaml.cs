@@ -1,10 +1,10 @@
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using EdgeBar.Services;
+using UToolBar.Services;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 public partial class ClipboardView : UserControl
 {

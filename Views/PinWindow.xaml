@@ -1,4 +1,4 @@
-<Window x:Class="EdgeBar.Views.PinWindow"
+﻿<Window x:Class="UToolBar.Views.PinWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="贴图"

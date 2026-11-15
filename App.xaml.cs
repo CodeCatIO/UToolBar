@@ -1,17 +1,17 @@
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
-using EdgeBar.Models;
-using EdgeBar.Services;
-using EdgeBar.Views;
+using UToolBar.Models;
+using UToolBar.Services;
+using UToolBar.Views;
 
-namespace EdgeBar;
+namespace UToolBar;
 
 public partial class App : Application
 {
-    private const string MutexName = "EdgeBar.App.SingleInstance";
-    private const string ShowEventName = "EdgeBar.App.Show";
+    private const string MutexName = "UToolBar.App.SingleInstance";
+    private const string ShowEventName = "UToolBar.App.Show";
 
     private static Mutex _mutex;
     private static EventWaitHandle _showEvent;
@@ -136,6 +136,8 @@ public partial class App : Application
 
         ClipboardService.Current.Attach(Shell);
 
+        AutoStartService.Migrate();
+
         var tray = new TrayService();
         tray.OpenRequested += () => Shell.ShowPanel();
         tray.NewNoteRequested += () => CreateNote();
@@ -147,6 +149,7 @@ public partial class App : Application
 
         // 注册表可能被外部修改，启动时以实际状态为准
         State.Settings.AutoStart = AutoStartService.IsEnabled();
+        if (State.Settings.AutoStart) AutoStartService.Apply(true);
 
         var reminderTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(15) };
         reminderTimer.Tick += (_, _) => CheckReminders();
@@ -187,7 +190,7 @@ public partial class App : Application
         })
         {
             IsBackground = true,
-            Name = "EdgeBar.SingleInstance"
+            Name = "UToolBar.SingleInstance"
         };
         thread.Start();
         return true;
@@ -379,7 +382,7 @@ public partial class App : Application
     {
         try
         {
-            File.AppendAllText(Path.Combine(Path.GetTempPath(), "edgebar_startup.log"),
+            File.AppendAllText(Path.Combine(Path.GetTempPath(), "UToolBar_startup.log"),
                 $"[{DateTime.Now:HH:mm:ss}] {message}\r\n");
         }
         catch

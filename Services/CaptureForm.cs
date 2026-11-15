@@ -1,11 +1,11 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Media.Imaging;
 using WinForms = System.Windows.Forms;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 /// <summary>用 WinForms 实现的全屏截图选区，避免 WPF 分层窗口的输入与渲染问题</summary>
 public sealed class CaptureForm : WinForms.Form

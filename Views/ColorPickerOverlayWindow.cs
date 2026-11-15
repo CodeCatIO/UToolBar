@@ -1,10 +1,10 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 /// <summary>全屏取色：鼠标移动预览颜色，点击拾取，Esc 取消</summary>
 public sealed class ColorPickerOverlayWindow : Window

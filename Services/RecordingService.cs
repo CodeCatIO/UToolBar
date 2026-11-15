@@ -10,7 +10,7 @@ using NAudio.Wave.SampleProviders;
 using Vortice.MediaFoundation;
 using WinForms = System.Windows.Forms;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 public enum RecordFormat
 {
@@ -50,7 +50,7 @@ public static class RecordingService
         get
         {
             var folder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "贴边录屏");
+                Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "UTB录屏");
             Directory.CreateDirectory(folder);
             return folder;
         }
@@ -59,7 +59,7 @@ public static class RecordingService
     public static string SuggestFileName(RecordFormat format)
     {
         var ext = format == RecordFormat.Gif ? "gif" : "mp4";
-        return Path.Combine(Folder, $"贴边录屏_{DateTime.Now:yyyyMMdd_HHmmss}.{ext}");
+        return Path.Combine(Folder, $"UTB录屏_{DateTime.Now:yyyyMMdd_HHmmss}.{ext}");
     }
 
     public static bool Start(RecordingOptions options)
@@ -122,7 +122,7 @@ internal sealed class RecordingSession
         _thread = new Thread(Run)
         {
             IsBackground = true,
-            Name = "EdgeBar.Recorder"
+            Name = "UToolBar.Recorder"
         };
         _thread.SetApartmentState(ApartmentState.MTA);
         _thread.Start();

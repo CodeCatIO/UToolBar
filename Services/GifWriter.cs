@@ -1,7 +1,7 @@
-using System.IO;
+﻿using System.IO;
 using System.Runtime.InteropServices;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 /// <summary>流式 GIF89a 编码器：固定 256 色调色板 + 有序抖动，逐帧写入不缓存整段录屏</summary>
 public sealed class GifWriter : IDisposable

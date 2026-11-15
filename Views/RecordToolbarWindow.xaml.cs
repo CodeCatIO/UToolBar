@@ -1,11 +1,11 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
-using EdgeBar.Services;
+using UToolBar.Services;
 using Rectangle = System.Drawing.Rectangle;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 /// <summary>录屏选区旁的悬浮工具条，本身不会被录进画面</summary>
 public partial class RecordToolbarWindow : Window

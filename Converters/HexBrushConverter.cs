@@ -1,8 +1,8 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace EdgeBar.Converters;
+namespace UToolBar.Converters;
 
 public class HexBrushConverter : IValueConverter
 {

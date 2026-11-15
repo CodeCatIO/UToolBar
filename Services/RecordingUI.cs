@@ -1,9 +1,9 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Threading;
 using WinForms = System.Windows.Forms;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 /// <summary>录屏入口：收起面板、冻结屏幕、弹出选区</summary>
 public static class RecordingUI

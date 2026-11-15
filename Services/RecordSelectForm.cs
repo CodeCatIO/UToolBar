@@ -1,10 +1,10 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Drawing2D;
-using EdgeBar.Services;
-using EdgeBar.Views;
+using UToolBar.Services;
+using UToolBar.Views;
 using WinForms = System.Windows.Forms;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 /// <summary>录屏选区：单击录制整个屏幕，拖动自定义范围，四周圆点可调整</summary>
 public sealed class RecordSelectForm : WinForms.Form

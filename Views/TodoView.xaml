@@ -1,7 +1,7 @@
-﻿<UserControl x:Class="EdgeBar.Views.TodoView"
+﻿<UserControl x:Class="UToolBar.Views.TodoView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:converters="clr-namespace:EdgeBar.Converters"
+             xmlns:converters="clr-namespace:UToolBar.Converters"
              FontFamily="Microsoft YaHei UI, Segoe UI">
 
     <UserControl.Resources>

@@ -1,11 +1,11 @@
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using EdgeBar.Models;
-using EdgeBar.Services;
+using UToolBar.Models;
+using UToolBar.Services;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 public partial class AnniversaryView : UserControl
 {

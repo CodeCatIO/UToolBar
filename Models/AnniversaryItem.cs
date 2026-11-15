@@ -1,7 +1,7 @@
-using System.Text.Json.Serialization;
-using EdgeBar.Services;
+﻿using System.Text.Json.Serialization;
+using UToolBar.Services;
 
-namespace EdgeBar.Models;
+namespace UToolBar.Models;
 
 public class AnniversaryItem : ObservableObject
 {

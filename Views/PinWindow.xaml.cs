@@ -1,10 +1,10 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 public partial class PinWindow : Window
 {

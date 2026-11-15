@@ -1,9 +1,9 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 public partial class ToastWindow : Window
 {

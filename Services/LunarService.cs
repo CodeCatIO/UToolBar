@@ -1,6 +1,6 @@
-using System.Globalization;
+﻿using System.Globalization;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 public sealed record LunarDate(int Year, int Month, int Day, bool IsLeap)
 {

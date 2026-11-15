@@ -1,9 +1,9 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
-namespace EdgeBar.Models;
+namespace UToolBar.Models;
 
 public class AppSettings : ObservableObject
 {
@@ -33,7 +33,7 @@ public class AppSettings : ObservableObject
     private string _giteeOwner = "";
     private string _giteeRepo = "";
     private string _giteeToken = "";
-    private string _giteePath = "edgebar/data.json";
+    private string _giteePath = "UToolBar/data.json";
     private int _recordFormat;
     private int _recordQuality;
     private bool _recordSystemAudio = true;
@@ -209,7 +209,7 @@ public class AppSettings : ObservableObject
     public string GiteePath
     {
         get => _giteePath;
-        set => Set(ref _giteePath, string.IsNullOrWhiteSpace(value) ? "edgebar/data.json" : value);
+        set => Set(ref _giteePath, string.IsNullOrWhiteSpace(value) ? "UToolBar/data.json" : value);
     }
 
     public string GiteeBranch
@@ -218,7 +218,7 @@ public class AppSettings : ObservableObject
         set => Set(ref _giteeBranch, string.IsNullOrWhiteSpace(value) ? "master" : value);
     }
 
-    /// <summary>截图保存目录，空表示默认的“图片\贴边截图”</summary>
+    /// <summary>截图保存目录，空表示默认的“图片\UTB截图”</summary>
     public string ScreenshotFolder
     {
         get => _screenshotFolder;

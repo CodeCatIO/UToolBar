@@ -1,4 +1,4 @@
-namespace EdgeBar.Services;
+﻿namespace UToolBar.Services;
 
 public sealed class HolidayInfo
 {

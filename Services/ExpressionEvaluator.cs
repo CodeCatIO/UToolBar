@@ -1,4 +1,4 @@
-namespace EdgeBar.Services;
+﻿namespace UToolBar.Services;
 
 /// <summary>一个很轻的四则运算解析器，支持括号、小数、百分号</summary>
 public static class ExpressionEvaluator

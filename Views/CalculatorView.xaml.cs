@@ -1,13 +1,13 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net.Http;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using EdgeBar.Services;
+using UToolBar.Services;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 public partial class CalculatorView : UserControl
 {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -8,15 +8,15 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>EdgeBar</AssemblyName>
-    <RootNamespace>EdgeBar</RootNamespace>
+    <AssemblyName>UToolBar</AssemblyName>
+    <RootNamespace>UToolBar</RootNamespace>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>2.2.0</Version>
-    <FileVersion>2.2.0.0</FileVersion>
-    <AssemblyVersion>2.2.0.0</AssemblyVersion>
-    <Product>贴边 EdgeBar</Product>
-    <AssemblyTitle>贴边 EdgeBar</AssemblyTitle>
+    <Version>2.3.0</Version>
+    <FileVersion>2.3.0.0</FileVersion>
+    <AssemblyVersion>2.3.0.0</AssemblyVersion>
+    <Product>UToolBar</Product>
+    <AssemblyTitle>UToolBar · 统一工具条</AssemblyTitle>
     <Company>CodeCat</Company>
     <Copyright>Copyright © 2026 CodeCat</Copyright>
     <SatelliteResourceLanguages>zh-CN</SatelliteResourceLanguages>
@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\icon.png" />
     <Resource Include="Assets\bg_cream.jpg" />
     <Resource Include="Assets\bg_sea.jpg" />
     <Resource Include="Assets\bg_starry.jpg" />

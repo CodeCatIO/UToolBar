@@ -1,8 +1,8 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace EdgeBar.Converters;
+namespace UToolBar.Converters;
 
 /// <summary>把行间距数值转换成只保留下边距的 Thickness</summary>
 public class BottomMarginConverter : IValueConverter

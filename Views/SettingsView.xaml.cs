@@ -1,15 +1,15 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using EdgeBar.Models;
-using EdgeBar.Services;
+using UToolBar.Models;
+using UToolBar.Services;
 using WinForms = System.Windows.Forms;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 public partial class SettingsView : UserControl
 {
@@ -104,7 +104,7 @@ public partial class SettingsView : UserControl
         AutoStartSwitch.IsChecked = AutoStartService.IsEnabled();
         DataPathText.Text = StorageService.Folder;
         ShotFolderText.Text = ScreenshotFolderDisplay();
-        VersionText.Text = "贴边 v" + (typeof(App).Assembly.GetName().Version?.ToString(3) ?? "2.0.0");
+        VersionText.Text = "UTB v" + (typeof(App).Assembly.GetName().Version?.ToString(3) ?? "2.0.0");
 
         PanelWidthSlider.Value = settings.PanelWidth;
         HandleWidthSlider.Value = settings.HandleWidth;
@@ -378,7 +378,7 @@ public partial class SettingsView : UserControl
         MonitorCombo.SelectedItem = _monitors.FirstOrDefault(m => m.DeviceName == settings.ScreenDevice) ?? _monitors.FirstOrDefault();
         MonitorHint.Text = $"当前检测到 {_monitors.Count} 个显示器" +
                            (_monitors.Count > 1
-                               ? "，选中后贴边会移动到该屏幕的右边缘。"
+                               ? "，选中后 UTB 会移动到该屏幕的右边缘。"
                                : "，接入副屏后可以在这里切换。");
     }
 
@@ -432,7 +432,7 @@ public partial class SettingsView : UserControl
     {
         string custom = App.State?.Settings.ScreenshotFolder;
         return string.IsNullOrWhiteSpace(custom)
-            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "贴边截图")
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "UTB截图")
             : custom;
     }
 
@@ -456,7 +456,7 @@ public partial class SettingsView : UserControl
     {
         using var dialog = new WinForms.FolderBrowserDialog
         {
-            Description = "选择贴边数据保存位置",
+            Description = "选择 UTB 数据保存位置",
             UseDescriptionForTitle = true,
             SelectedPath = StorageService.Folder,
             ShowNewFolderButton = true

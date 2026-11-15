@@ -1,7 +1,7 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace EdgeBar.Models;
+namespace UToolBar.Models;
 
 public abstract class ObservableObject : INotifyPropertyChanged
 {

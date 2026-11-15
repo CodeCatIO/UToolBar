@@ -1,13 +1,13 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using EdgeBar.Views;
+using UToolBar.Views;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 /// <summary>区域截图、全屏截图、窗口截图</summary>
 public static class ScreenshotService

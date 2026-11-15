@@ -1,12 +1,12 @@
-using System.IO;
+﻿using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using EdgeBar.Models;
+using UToolBar.Models;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 /// <summary>监听剪贴板变化并保存历史，自动跳过密码管理器标记的内容</summary>
 public sealed class ClipboardService : IDisposable

@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -6,11 +6,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using EdgeBar.Models;
-using EdgeBar.Services;
+using UToolBar.Models;
+using UToolBar.Services;
 using Microsoft.Win32;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 public partial class ScreenshotEditorWindow : Window
 {
@@ -1846,7 +1846,7 @@ public partial class ScreenshotEditorWindow : Window
     {
         string custom = App.State?.Settings.ScreenshotFolder;
         if (!string.IsNullOrWhiteSpace(custom)) return custom;
-        return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "贴边截图");
+        return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "UTB截图");
     }
 
     private void OnSaveClick(object sender, RoutedEventArgs e)

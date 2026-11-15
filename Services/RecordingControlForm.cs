@@ -1,10 +1,10 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Runtime.InteropServices;
 using WinForms = System.Windows.Forms;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 /// <summary>录制中的控制条：计时与停止。通过 WDA_EXCLUDEFROMCAPTURE 排除出录屏画面。</summary>
 public sealed class RecordingControlForm : WinForms.Form

@@ -1,4 +1,6 @@
-# 贴边 EdgeBar
+﻿# UToolBar（UTB）
+
+**Union Tools Bar · 统一工具条**
 
 一个贴在 Windows 屏幕右侧的抽屉式效率面板：便签、待办、截图标注、剪贴板历史、屏幕录制、纪念日、万年历、牛马计薪，都收在这一条里。
 
@@ -8,12 +10,14 @@
 
 ## 下载安装
 
-到 [Releases](../../releases) 下载最新的 `EdgeBar-setup-*.exe`，双击安装即可。
+到 [Releases](../../releases) 下载最新的 `UToolBar-setup-*.exe`，双击安装即可。
 
-- 安装目录可以自己选，默认 `D:\Programs\EdgeBar`
+- 安装目录可以自己选，默认 `D:\Programs\UToolBar`
 - 自包含 .NET 8 运行时，**不需要**额外安装 .NET
 - 支持覆盖升级，安装程序会先结束正在运行的旧版本
 - 卸载后数据目录会保留，重装不丢数据
+
+> 从旧版 EdgeBar（2.2 及更早）升级：首次启动会自动把 `%APPDATA%\EdgeBar` 的数据复制到 `%APPDATA%\UToolBar`，并迁移开机自启。旧目录会保留作备份，确认无误后可自行删除。
 
 系统要求：Windows 10 2004 及以上 / Windows 11，64 位。
 
@@ -21,7 +25,7 @@
 
 ## 功能
 
-### 贴边面板
+### 主面板
 - 抽屉式展开/收起，把手位置、面板宽度、圆角、透明度都可调
 - 浅色 / 深色主题，奶油、海、樱花、森林、星空、极光 6 套插画背景，切换无需重启
 - 顶部工具坞可自定义，最多放 4 个常用工具
@@ -44,7 +48,7 @@
 - 6 档笔触大小；选择工具可选中、移动已绘制的箭头/直线/矩形/文字
 - `Ctrl + 滚轮` 以光标为中心缩放，放大后右键拖拽平移
 - 撤销 / 重做、清空、复制并关闭、保存 PNG、贴到桌面
-- 截图保存目录可在设置里修改
+- 截图保存目录可在设置里修改，默认 `图片\UTB截图`
 
 ### 屏幕录制
 - `Ctrl + Alt + S` 呼出：单击录制整个屏幕，拖动自定义范围，四周圆点可调整
@@ -52,7 +56,7 @@
 - 录制中的控制条带计时和停止，**不会被录进画面**
 - MP4：H.264 + AAC，支持系统声音和麦克风混音
 - GIF：10fps、最长边 800px，无音轨
-- 文件保存在 `视频\贴边录屏`
+- 文件保存在 `视频\UTB录屏`
 
 ### 剪贴板历史
 - `Ctrl + Alt + V` 呼出浮窗，保留最近 60 条
@@ -75,7 +79,7 @@
 需要 .NET 8 SDK。
 
 ```powershell
-cd EdgeBar
+cd UToolBar
 dotnet publish -c Release -r win-x64 --self-contained true `
   -p:PublishSingleFile=true `
   -p:IncludeNativeLibrariesForSelfExtract=true `
@@ -88,7 +92,7 @@ dotnet publish -c Release -r win-x64 --self-contained true `
 打包安装程序需要 [Inno Setup 6](https://jrsoftware.org/isinfo.php)：
 
 ```powershell
-ISCC.exe Installer\EdgeBar.iss
+ISCC.exe Installer\UToolBar.iss
 ```
 
 生成的安装包在 `Installer\Output\`。
@@ -96,7 +100,7 @@ ISCC.exe Installer\EdgeBar.iss
 ## 项目结构
 
 ```
-EdgeBar/
+UToolBar/
 ├─ Assets/            图标与主题背景插画
 ├─ Converters/        WPF 值转换器
 ├─ Installer/         Inno Setup 安装脚本
@@ -105,12 +109,12 @@ EdgeBar/
 ├─ Themes/            亮色/暗色资源字典与控件样式
 ├─ Views/             各功能页面与浮窗
 ├─ App.xaml.cs        启动、单实例、主题、便签窗口管理
-└─ MainWindow.xaml    贴边面板主窗口
+└─ MainWindow.xaml    贴边主面板窗口
 ```
 
 ## 数据与隐私
 
-- 所有数据默认保存在 `%APPDATA%\EdgeBar`，可在设置里迁移到其他盘
+- 所有数据默认保存在 `%APPDATA%\UToolBar`，可在设置里迁移到其他盘
 - 便签、待办、剪贴板、截图、录屏都只在本地，不会上传
 - 只有在设置里主动配置 Gitee 仓库后，才会把 `data.json` 同步到你的私人仓库
 - 剪贴板会跳过密码管理器标记的内容

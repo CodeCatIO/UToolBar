@@ -1,8 +1,8 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using EdgeBar.Services;
+using UToolBar.Services;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 public partial class ScreenshotView : UserControl
 {

@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -6,12 +6,12 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using EdgeBar.Models;
-using EdgeBar.Services;
-using EdgeBar.Views;
+using UToolBar.Models;
+using UToolBar.Services;
+using UToolBar.Views;
 using WinForms = System.Windows.Forms;
 
-namespace EdgeBar;
+namespace UToolBar;
 
 public partial class MainWindow : Window
 {
@@ -35,7 +35,7 @@ public partial class MainWindow : Window
     };
     private readonly string[] _moduleTitles =
     {
-        "贴边", "纪念日", "计算器", "万年历", "牛马计薪", "便利签", "截图贴图", "剪贴板"
+        "UTB", "纪念日", "计算器", "万年历", "牛马计薪", "便利签", "截图贴图", "剪贴板"
     };
 
     private HotkeyService _hotkeys;

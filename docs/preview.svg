@@ -10,8 +10,8 @@
       <stop offset="1" stop-color="#f7d9c4"/>
     </linearGradient>
     <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#5aa7f2"/>
-      <stop offset="1" stop-color="#2f7cf6"/>
+      <stop offset="0" stop-color="#bdf4ea"/>
+      <stop offset="1" stop-color="#7fd8cc"/>
     </linearGradient>
     <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
       <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#20364a" flood-opacity="0.16"/>
@@ -54,7 +54,7 @@
     <!-- 顶栏 -->
     <rect x="904" y="44" width="26" height="26" rx="9" fill="url(#accent)"/>
     <rect x="908" y="52" width="18" height="10" rx="3" fill="#ffffff" opacity="0.9"/>
-    <text x="940" y="63" font-family="Microsoft YaHei UI, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#2b3a4a">贴边</text>
+    <text x="940" y="63" font-family="Microsoft YaHei UI, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#2b3a4a">UTB</text>
 
     <!-- 图标坞 -->
     <g fill="#6b7f93">
@@ -105,6 +105,6 @@
   <!-- 提示气泡 -->
   <g filter="url(#cardShadow)">
     <rect x="452" y="20" width="300" height="34" rx="17" fill="#ffffff" opacity="0.96"/>
-    <text x="472" y="42" font-family="Microsoft YaHei UI, Segoe UI, sans-serif" font-size="12" fill="#6b7f93">Ctrl + Alt + B 随时呼出贴边面板</text>
+    <text x="472" y="42" font-family="Microsoft YaHei UI, Segoe UI, sans-serif" font-size="12" fill="#6b7f93">Ctrl + Alt + B 随时呼出 UTB 面板</text>
   </g>
 </svg>

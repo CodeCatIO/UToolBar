@@ -1,6 +1,6 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace EdgeBar.Models;
+namespace UToolBar.Models;
 
 public class NoteData : ObservableObject
 {

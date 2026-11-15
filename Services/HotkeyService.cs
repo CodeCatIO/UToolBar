@@ -1,8 +1,8 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 /// <summary>注册两个全局快捷键：Alt+N 新建便签，Ctrl+Alt+B 展开/收起面板</summary>
 public sealed class HotkeyService : IDisposable

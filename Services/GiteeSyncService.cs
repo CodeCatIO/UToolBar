@@ -1,12 +1,12 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using EdgeBar.Models;
+using UToolBar.Models;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 /// <summary>Gitee 仓库手动同步：上传 / 下拉，不做自动同步</summary>
 public static class GiteeSyncService
@@ -22,7 +22,7 @@ public static class GiteeSyncService
     private static HttpClient CreateClient()
     {
         var client = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("EdgeBar/2.2");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("UToolBar/2.2");
         return client;
     }
 
@@ -36,7 +36,7 @@ public static class GiteeSyncService
         if (string.IsNullOrWhiteSpace(s.GiteeToken))
             throw new InvalidOperationException("请先填写 Gitee 私人令牌");
         if (string.IsNullOrWhiteSpace(s.GiteePath))
-            throw new InvalidOperationException("请填写云端文件路径，例如 edgebar/data.json");
+            throw new InvalidOperationException("请填写云端文件路径，例如 UToolBar/data.json");
     }
 
     private sealed class RemoteFile
@@ -108,7 +108,7 @@ public static class GiteeSyncService
         {
             new("access_token", s.GiteeToken),
             new("content", content),
-            new("message", $"EdgeBar 数据备份 {DateTime.Now:yyyy-MM-dd HH:mm}")
+            new("message", $"UToolBar 数据备份 {DateTime.Now:yyyy-MM-dd HH:mm}")
         };
         if (remote.Exists && !string.IsNullOrEmpty(remote.Sha))
             fields.Add(new("sha", remote.Sha));

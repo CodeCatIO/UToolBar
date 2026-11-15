@@ -1,12 +1,12 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using EdgeBar.Models;
+using UToolBar.Models;
 
-namespace EdgeBar.Views;
+namespace UToolBar.Views;
 
 public partial class NoteWindow : Window
 {

@@ -1,7 +1,7 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace EdgeBar.Services;
+namespace UToolBar.Services;
 
 /// <summary>系统托盘图标与右键菜单</summary>
 public sealed class TrayService : IDisposable
@@ -22,7 +22,7 @@ public sealed class TrayService : IDisposable
             Font = new Font("Microsoft YaHei UI", 9f)
         };
 
-        var open = new ToolStripMenuItem("打开贴边面板") { Font = new Font(menu.Font, FontStyle.Bold) };
+        var open = new ToolStripMenuItem("打开 UToolBar 面板") { Font = new Font(menu.Font, FontStyle.Bold) };
         open.Click += (_, _) => OpenRequested?.Invoke();
 
         var note = new ToolStripMenuItem("新建便签");
@@ -34,7 +34,7 @@ public sealed class TrayService : IDisposable
         _autoStartItem = new ToolStripMenuItem("开机自启") { CheckOnClick = true };
         _autoStartItem.Click += (_, _) => AutoStartService.Apply(_autoStartItem.Checked);
 
-        var exit = new ToolStripMenuItem("退出贴边");
+        var exit = new ToolStripMenuItem("退出 UToolBar");
         exit.Click += (_, _) => ExitRequested?.Invoke();
 
         menu.Items.Add(open);
@@ -47,7 +47,7 @@ public sealed class TrayService : IDisposable
 
         _icon = new NotifyIcon
         {
-            Text = "贴边 EdgeBar",
+            Text = "UToolBar · 统一工具条",
             Visible = true,
             Icon = LoadIcon(),
             ContextMenuStrip = menu

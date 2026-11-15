@@ -1,4 +1,4 @@
-<Window x:Class="EdgeBar.Views.RecordToolbarWindow"
+﻿<Window x:Class="UToolBar.Views.RecordToolbarWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
