@@ -20,6 +20,9 @@ public sealed class ClipboardService : IDisposable
 
     public static ClipboardService Current { get; } = new();
 
+    /// <summary>最近一次剪贴板变化的时间，用于判断剪贴板里的图片是否比最近截图更新</summary>
+    public static DateTime LastChangeAt { get; private set; } = DateTime.MinValue;
+
     public static string ImageFolder => Path.Combine(StorageService.Folder, "clips");
 
     public void Attach(Window window)
@@ -35,6 +38,7 @@ public sealed class ClipboardService : IDisposable
     {
         if (msg == WmClipboardUpdate)
         {
+            LastChangeAt = DateTime.Now;
             Application.Current?.Dispatcher.BeginInvoke(new Action(ReadClipboard), DispatcherPriority.Background);
         }
         return IntPtr.Zero;
@@ -142,8 +146,47 @@ public sealed class ClipboardService : IDisposable
         App.State.Notify();
     }
 
-    public static void CopyToClipboard(ClipItem item)
+    /// <summary>读取剪贴板里的图片（兼容系统截图工具的 DIB 和 PNG 格式）</summary>
+    public static BitmapSource TryReadClipboardImage()
     {
+        try
+        {
+            if (Clipboard.ContainsImage())
+            {
+                var image = Clipboard.GetImage();
+                if (image != null)
+                {
+                    if (image.CanFreeze) image.Freeze();
+                    return image;
+                }
+            }
+        }
+        catch
+        {
+        }
+
+        try
+        {
+            var data = Clipboard.GetDataObject();
+            if (data != null && data.GetDataPresent("PNG") && data.GetData("PNG") is Stream stream)
+            {
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = stream;
+                image.EndInit();
+                if (image.CanFreeze) image.Freeze();
+                return image;
+            }
+        }
+        catch
+        {
+        }
+
+        return null;
+    }
+
+    public static void CopyToClipboard(ClipItem item)    {
         if (item == null) return;
         Current._ignoreUntil = DateTime.Now.AddMilliseconds(700);
         try

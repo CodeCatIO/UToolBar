@@ -345,6 +345,41 @@ public partial class App : Application
         if (State != null) State.Settings.SalaryWidgetVisible = false;
     }
 
+    // ================= 贴图 =================
+
+    /// <summary>Alt+T：贴出最近一张图，UTB 截图和其他工具复制到剪贴板的图片都认</summary>
+    public static void PinRecentScreenshot()
+    {
+        try
+        {
+            var clipboardImage = ClipboardService.TryReadClipboardImage();
+            bool hasHistory = ScreenshotHistory.Count > 0;
+
+            // 剪贴板里的图片比最近一张 UTB 截图更新，说明是刚用别的工具截的
+            bool clipboardIsLatest = clipboardImage != null &&
+                (!hasHistory || ClipboardService.LastChangeAt > ScreenshotHistory.LastAddedAt);
+
+            if (clipboardIsLatest)
+            {
+                ScreenshotHistory.Add(clipboardImage);
+                new PinWindow(clipboardImage, ScreenshotHistory.Count - 1).Show();
+                return;
+            }
+
+            if (hasHistory)
+            {
+                new PinWindow(ScreenshotHistory.Count - 1).Show();
+                return;
+            }
+
+            ShowToast("还没有截图", "用 UTB 截图，或把系统截图复制到剪贴板，再按 Alt + T");
+        }
+        catch (Exception ex)
+        {
+            ShowToast("贴图失败", ex.Message);
+        }
+    }
+
     // ================= 提示弹窗 =================
 
     public static void ShowToast(string title, string message)

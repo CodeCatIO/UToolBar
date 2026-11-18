@@ -42,7 +42,7 @@ public sealed class RecordSelectForm : WinForms.Form
         StartPosition = WinForms.FormStartPosition.Manual;
         Bounds = virtualBounds;
         BackColor = Color.Black;
-        Cursor = WinForms.Cursors.Cross;
+        Cursor = WinForms.Cursors.Default;
         KeyPreview = true;
         DoubleBuffered = true;
         SetStyle(WinForms.ControlStyles.OptimizedDoubleBuffer |
@@ -306,7 +306,7 @@ public sealed class RecordSelectForm : WinForms.Form
                 2 or 6 => WinForms.Cursors.SizeNESW,
                 1 or 5 => WinForms.Cursors.SizeNS,
                 3 or 7 => WinForms.Cursors.SizeWE,
-                _ => WinForms.Cursors.Cross
+                _ => WinForms.Cursors.Default
             };
         }
         else if (_hasSelection && _selection.Contains(point))
@@ -315,7 +315,7 @@ public sealed class RecordSelectForm : WinForms.Form
         }
         else
         {
-            Cursor = WinForms.Cursors.Cross;
+            Cursor = WinForms.Cursors.Default;
         }
     }
 

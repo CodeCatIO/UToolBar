@@ -29,7 +29,7 @@ public sealed class CaptureForm : WinForms.Form
         StartPosition = WinForms.FormStartPosition.Manual;
         Bounds = virtualBounds;
         BackColor = Color.Black;
-        Cursor = WinForms.Cursors.Cross;
+        Cursor = WinForms.Cursors.Default;
         KeyPreview = true;
         DoubleBuffered = true;
         SetStyle(WinForms.ControlStyles.OptimizedDoubleBuffer |

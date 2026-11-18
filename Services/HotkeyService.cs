@@ -4,7 +4,7 @@ using System.Windows.Interop;
 
 namespace UToolBar.Services;
 
-/// <summary>注册两个全局快捷键：Alt+N 新建便签，Ctrl+Alt+B 展开/收起面板</summary>
+/// <summary>注册全局快捷键：Alt+N 新建便签，Alt+T 贴出最近截图，Ctrl+Alt+B 展开/收起面板</summary>
 public sealed class HotkeyService : IDisposable
 {
     private const int WmHotkey = 0x0312;
@@ -18,18 +18,21 @@ public sealed class HotkeyService : IDisposable
     private const int ScreenshotId = 9173;
     private const int ClipboardId = 9174;
     private const int RecordId = 9175;
+    private const int PinRecentId = 9176;
 
     public event Action NewNoteRequested;
     public event Action ToggleRequested;
     public event Action ScreenshotRequested;
     public event Action ClipboardRequested;
     public event Action RecordRequested;
+    public event Action PinRecentRequested;
 
     public bool NewNoteRegistered { get; private set; }
     public bool ToggleRegistered { get; private set; }
     public bool ScreenshotRegistered { get; private set; }
     public bool ClipboardRegistered { get; private set; }
     public bool RecordRegistered { get; private set; }
+    public bool PinRecentRegistered { get; private set; }
 
     public void Attach(Window window)
     {
@@ -38,6 +41,7 @@ public sealed class HotkeyService : IDisposable
         _source?.AddHook(Hook);
 
         NewNoteRegistered = RegisterHotKey(handle, NewNoteId, ModAlt | ModNoRepeat, 0x4E /* N */);
+        PinRecentRegistered = RegisterHotKey(handle, PinRecentId, ModAlt | ModNoRepeat, 0x54 /* T */);
         ToggleRegistered = RegisterHotKey(handle, ToggleId, ModControl | ModAlt | ModNoRepeat, 0x42 /* B */);
         ScreenshotRegistered = RegisterHotKey(handle, ScreenshotId, ModControl | ModAlt | ModNoRepeat, 0x41 /* A */);
         ClipboardRegistered = RegisterHotKey(handle, ClipboardId, ModControl | ModAlt | ModNoRepeat, 0x56 /* V */);
@@ -52,6 +56,11 @@ public sealed class HotkeyService : IDisposable
             if (id == NewNoteId)
             {
                 NewNoteRequested?.Invoke();
+                handled = true;
+            }
+            else if (id == PinRecentId)
+            {
+                PinRecentRequested?.Invoke();
                 handled = true;
             }
             else if (id == ToggleId)
@@ -83,6 +92,7 @@ public sealed class HotkeyService : IDisposable
         if (_source == null) return;
         var handle = _source.Handle;
         if (NewNoteRegistered) UnregisterHotKey(handle, NewNoteId);
+        if (PinRecentRegistered) UnregisterHotKey(handle, PinRecentId);
         if (ToggleRegistered) UnregisterHotKey(handle, ToggleId);
         if (ScreenshotRegistered) UnregisterHotKey(handle, ScreenshotId);
         if (ClipboardRegistered) UnregisterHotKey(handle, ClipboardId);

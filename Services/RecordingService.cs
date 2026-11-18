@@ -8,7 +8,6 @@ using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using Vortice.MediaFoundation;
-using WinForms = System.Windows.Forms;
 
 namespace UToolBar.Services;
 
@@ -228,13 +227,26 @@ internal sealed class RecordingSession
 
                 if (audioStream >= 0 && now >= nextAudio)
                 {
-                    WriteAudioSample(writer, audioStream, audioChunkBytes, audioTime);
-                    audioTime += 2_000_000L;
-                    nextAudio += 2_000_000L;
-                    if (nextAudio < now - 5_000_000L) nextAudio = now;
+                    // 一次循环里最多补 10 块（200ms），避免卡顿后音轨越落越远
+                    int burst = 0;
+                    while (audioStream >= 0 && now >= nextAudio && burst++ < 10)
+                    {
+                        WriteAudioSample(writer, audioStream, audioChunkBytes, audioTime);
+                        audioTime += 200_000L; // 960 帧 @ 48kHz = 20ms
+                        nextAudio += 200_000L;
+                    }
+
+                    // 落后太多就整体跳过，时间戳一起跳，避免后面的音频样本变成“过去时间”被封装器丢掉
+                    if (nextAudio < now - 2_000_000L)
+                    {
+                        long skip = now - nextAudio;
+                        nextAudio += skip;
+                        audioTime += skip;
+                    }
                 }
 
-                int sleep = (int)Math.Min(8, Math.Max(1, (Math.Min(nextVideo, nextAudio < 0 ? nextVideo : nextAudio) - now) / 10_000));
+                long next = audioStream >= 0 ? Math.Min(nextVideo, nextAudio) : nextVideo;
+                int sleep = (int)Math.Min(8, Math.Max(1, (next - now) / 10_000));
                 Thread.Sleep(sleep);
             }
 
@@ -372,7 +384,7 @@ internal sealed class RecordingSession
         using var sample = MediaFactory.MFCreateSample();
         sample.AddBuffer(buffer);
         sample.SampleTime = timestamp;
-        sample.SampleDuration = 2_000_000L;
+        sample.SampleDuration = 200_000L; // 20ms
         writer.WriteSample(stream, sample);
         buffer.Dispose();
     }
@@ -548,6 +560,42 @@ internal sealed class RecordingSession
 /// <summary>按固定输出尺寸抓屏，需要缩放时在抓取后重采样</summary>
 internal sealed class ScreenFrameCapture : IDisposable
 {
+    private const uint SrcCopy = 0x00CC0020;
+    private const uint CaptureBlt = 0x40000000;
+    private const int CursorShowing = 0x0001;
+    private const int DiNormal = 0x0003;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct CursorInfo
+    {
+        public int cbSize;
+        public int flags;
+        public IntPtr hCursor;
+        public System.Drawing.Point ptScreenPos;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct IconInfo
+    {
+        public int fIcon;
+        public int xHotspot;
+        public int yHotspot;
+        public IntPtr hbmMask;
+        public IntPtr hbmColor;
+    }
+
+    [DllImport("user32.dll")] private static extern IntPtr GetDC(IntPtr hWnd);
+    [DllImport("user32.dll")] private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+    [DllImport("user32.dll")] private static extern bool GetCursorInfo(ref CursorInfo info);
+    [DllImport("user32.dll")] private static extern bool GetIconInfo(IntPtr hIcon, out IconInfo info);
+    [DllImport("user32.dll")]
+    private static extern bool DrawIconEx(IntPtr hdc, int x, int y, IntPtr hIcon,
+        int cx, int cy, int istep, IntPtr hbrFlickerFreeDraw, int diFlags);
+    [DllImport("gdi32.dll")] private static extern bool DeleteObject(IntPtr hObject);
+    [DllImport("gdi32.dll")]
+    private static extern bool BitBlt(IntPtr hdc, int x, int y, int width, int height,
+        IntPtr hdcSrc, int srcX, int srcY, uint rop);
+
     private readonly Rectangle _region;
     private readonly int _width;
     private readonly int _height;
@@ -576,8 +624,25 @@ internal sealed class ScreenFrameCapture : IDisposable
     {
         try
         {
-            _nativeGraphics.CopyFromScreen(_region.Left, _region.Top, 0, 0, _native.Size,
-                CopyPixelOperation.SourceCopy);
+            // CaptureBlt 把分层窗口（动态壁纸等）也抓进来，纯 CopyFromScreen 会漏掉
+            IntPtr screenDc = GetDC(IntPtr.Zero);
+            try
+            {
+                IntPtr destDc = _nativeGraphics.GetHdc();
+                try
+                {
+                    BitBlt(destDc, 0, 0, _native.Width, _native.Height, screenDc,
+                        _region.Left, _region.Top, SrcCopy | CaptureBlt);
+                }
+                finally
+                {
+                    _nativeGraphics.ReleaseHdc(destDc);
+                }
+            }
+            finally
+            {
+                ReleaseDC(IntPtr.Zero, screenDc);
+            }
 
             var bitmap = _output ?? _native;
             if (_output != null)
@@ -598,22 +663,40 @@ internal sealed class ScreenFrameCapture : IDisposable
     {
         try
         {
-            var position = WinForms.Cursor.Position;
-            int x = position.X - _region.Left;
-            int y = position.Y - _region.Top;
+            var info = new CursorInfo { cbSize = Marshal.SizeOf<CursorInfo>() };
+            if (!GetCursorInfo(ref info) || info.hCursor == IntPtr.Zero) return;
+            if ((info.flags & CursorShowing) == 0) return;
+
+            int x = info.ptScreenPos.X - _region.Left;
+            int y = info.ptScreenPos.Y - _region.Top;
             if (x < -32 || y < -32 || x > _width + 32 || y > _height + 32) return;
 
-            var cursor = WinForms.Cursor.Current ?? WinForms.Cursors.Default;
-            var size = cursor.Size;
-            var hotspot = cursor.HotSpot;
             if (_output != null && _native.Width != _width)
             {
                 x = x * _width / _native.Width;
                 y = y * _height / _native.Height;
             }
 
+            // 用当前真实光标句柄绘制，避免后台线程 Cursor.Current 默认拿到“忙碌圆圈”
+            int hotX = 0, hotY = 0;
+            if (GetIconInfo(info.hCursor, out var icon))
+            {
+                hotX = icon.xHotspot;
+                hotY = icon.yHotspot;
+                if (icon.hbmMask != IntPtr.Zero) DeleteObject(icon.hbmMask);
+                if (icon.hbmColor != IntPtr.Zero) DeleteObject(icon.hbmColor);
+            }
+
             using var graphics = Graphics.FromImage(bitmap);
-            cursor.Draw(graphics, new Rectangle(x - hotspot.X, y - hotspot.Y, size.Width, size.Height));
+            IntPtr hdc = graphics.GetHdc();
+            try
+            {
+                DrawIconEx(hdc, x - hotX, y - hotY, info.hCursor, 0, 0, 0, IntPtr.Zero, DiNormal);
+            }
+            finally
+            {
+                graphics.ReleaseHdc(hdc);
+            }
         }
         catch
         {

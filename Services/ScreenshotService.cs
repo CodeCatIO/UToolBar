@@ -40,6 +40,7 @@ public static class ScreenshotService
             bitmap.Dispose();
 
             if (image == null) return;
+            ScreenshotHistory.Add(image);
             var editor = new ScreenshotEditorWindow(image);
             editor.Show();
             editor.Activate();
@@ -51,12 +52,14 @@ public static class ScreenshotService
     public static void CaptureFullScreen() => PrepareAndRun(() =>
     {
         var bitmap = CaptureVirtualScreen();
+        ScreenshotHistory.Add(bitmap);
         new ScreenshotEditorWindow(bitmap).Show();
     });
 
     public static void CaptureWindow() => PrepareAndRun(() =>
     {
         var bitmap = CaptureForegroundWindow();
+        ScreenshotHistory.Add(bitmap);
         new ScreenshotEditorWindow(bitmap).Show();
     });
 

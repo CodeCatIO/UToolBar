@@ -314,13 +314,13 @@ public partial class ScreenshotEditorWindow : Window
         e.Handled = true;
     }
 
-    /// <summary>画笔、马赛克、橡皮只显示圆圈，不要十字准星</summary>
+    /// <summary>画笔、马赛克、橡皮只显示圆圈；其余工具用普通鼠标，不用十字准星</summary>
     private Cursor CursorForTool() => _tool switch
     {
         Tool.Text => Cursors.IBeam,
         Tool.Select => Cursors.Arrow,
         Tool.Pen or Tool.Mosaic or Tool.Eraser => Cursors.None,
-        _ => Cursors.Cross
+        _ => Cursors.Arrow
     };
 
     private double EraserRadius => Math.Max(3, _size * 1.8);
@@ -1832,7 +1832,9 @@ public partial class ScreenshotEditorWindow : Window
     {
         try
         {
-            Clipboard.SetImage(RenderSurface());
+            var bitmap = RenderSurface();
+            ScreenshotHistory.Add(bitmap);
+            Clipboard.SetImage(bitmap);
             App.ShowToast("已复制", "截图已复制到剪贴板");
             Close();
         }
@@ -1885,7 +1887,8 @@ public partial class ScreenshotEditorWindow : Window
         try
         {
             var bitmap = RenderSurface();
-            var pin = new PinWindow(bitmap);
+            ScreenshotHistory.Add(bitmap);
+            var pin = new PinWindow(bitmap, ScreenshotHistory.Count - 1);
             pin.Show();
             Close();
         }

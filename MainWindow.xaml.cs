@@ -68,6 +68,7 @@ public partial class MainWindow : Window
             _hotkeys = new HotkeyService();
             _hotkeys.Attach(this);
             _hotkeys.NewNoteRequested += () => App.CreateNote();
+            _hotkeys.PinRecentRequested += () => App.PinRecentScreenshot();
             _hotkeys.ScreenshotRequested += () => ScreenshotService.StartRegionCapture();
             _hotkeys.ClipboardRequested += () => App.ShowClipboardPopup();
             _hotkeys.RecordRequested += () => RecordingUI.StartSelection();
